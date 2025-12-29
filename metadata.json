@@ -1,0 +1,7 @@
+{
+  "name": "VeriTrustX | Global Integrity Protocol",
+  "description": "The world's first neural verification engine for professional integrity and corporate governance.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
