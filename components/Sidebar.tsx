@@ -150,5 +150,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     </aside>
   );
 };
-
+{/* Add this after the </nav> tag */}
+<div className="p-8 border-t border-zinc-100 mt-auto bg-zinc-50/50">
+   <div className="flex items-center gap-2 mb-2">
+      <ShieldCheck size={12} className="text-emerald-500" />
+      <span className="text-[8px] font-black text-zinc-900 uppercase tracking-widest">Protocol Secured</span>
+   </div>
+   <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
+      © 2025 VeriTrustX Protocol. <br /> 
+      Global Integrity Standard. <br /> 
+      All Rights Reserved.
+   </p>
+</div>
 export default Sidebar;
