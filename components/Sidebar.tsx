@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Search, Settings2, 
   ShieldCheck, UserCheck, Fingerprint, FileSearch, Code2, History,
   Key, Map, Scale, Bell, Radio, ReceiptText, UserPlus, Scan,
-  Sun, Moon, Shield, Sparkles
+  Sun, Moon, Shield, Sparkles,
+  MessageSquare
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
@@ -25,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     { id: 'proxy-guard', label: 'Proxy Guard', icon: UserCheck, badge: 'LIVE', category: 'Scanning' },
     { id: 'bgv-vault', label: 'BGV Vault', icon: ShieldCheck, category: 'Scanning' },
     { id: 'audit-history', label: 'Audit History', icon: History, category: 'Scanning' },
+    { id: 'contact-us', label: 'Forensic Support', icon: MessageSquare, badge: '24/7', category: 'System' },
     
     // Growth & Business
     { id: 'client-acquisition', label: 'Lead Radar', icon: Radio, badge: 'GROWTH', category: 'Business' },
