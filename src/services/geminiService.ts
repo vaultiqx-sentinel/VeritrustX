@@ -1,53 +1,41 @@
 /**
- * VERITRUSTX NEURAL UPLINK SERVICE
- * This service routes all frontend requests to the local/production Node.js backend.
+ * VERITRUSTX NEURAL UPLINK - v1.7 (Stable Production)
+ * Corrected members to resolve ResourceLedger and ERP errors.
  */
 
-// LOCAL TESTING: Use Port 5000
-// PRODUCTION: Replace with your Render.com URL (e.g., https://veritrustx-api.onrender.com/api)
-const API_BASE = "https://veritrustx.onrender.com/api";
+const API_BASE = "https://veritrustx.onrender.com/api"; 
 
-/**
- * 1. INTEGRITY SCANNER: Forensic Scrutiny Audit
- * Analyzes candidate text for logic fractures and inconsistencies.
- */
-export const performQuantumAudit = async (candidateData: string): Promise<string> => {
+/** 1. INTEGRITY SCANNER (Audit) */
+export const performQuantumAudit = async (candidateData: string, licenseKey: string = "DEMO"): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE}/audit`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ candidateData })
+      body: JSON.stringify({ candidateData, licenseKey })
     });
     const data = await response.json();
-    return data.report || "Audit failed to generate logic report.";
+    return data.report || data.error || "Neural Core Response Timeout.";
   } catch (error) {
-    console.error("Audit Error:", error);
-    return "OFFLINE: Neural Core connection severed. Ensure backend is running.";
+    return "[UPLINK ERROR]: Neural Core unreachable.";
   }
 };
 
-/**
- * 2. FORENSIC LAB: Digital DNA Image Analysis
- * Scans documents for pixel tampering and template violations.
- */
-export const analyzeDocumentImage = async (base64Data: string, mimeType: string): Promise<string> => {
+/** 2. FORENSIC DNA LAB (Image Analysis) */
+export const analyzeDocumentImage = async (base64Data: string, mimeType: string, licenseKey: string = "DEMO"): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE}/forensic-analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ base64Data, mimeType })
+      body: JSON.stringify({ base64Data, mimeType, licenseKey })
     });
     const data = await response.json();
-    return data.report || "Analysis failed.";
+    return data.report || "Forensic Link Fault.";
   } catch (error) {
-    return "LAB ERROR: Image data too large or backend offline.";
+    return "LAB ERROR: Connection failed.";
   }
 };
 
-/**
- * 3. ERP ARCHITECT: Autonomous Logic Core
- * Transforms business rules using natural language directives.
- */
+/** 3. ERP ARCHITECT (Logic Transformation) */
 export const executeBusinessDirective = async (directive: string, erpState: string): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE}/erp-directive`, {
@@ -58,47 +46,12 @@ export const executeBusinessDirective = async (directive: string, erpState: stri
     const data = await response.json();
     return data.report;
   } catch (error) {
-    throw new Error("Logic Core offline.");
+    return "ERP ERROR: Logic Mesh offline.";
   }
 };
 
-/**
- * 4. GLOBAL PULSE: Grounded Background Search
- */
-export const globalBackgroundSearch = async (query: string) => {
-  try {
-    const response = await fetch(`${API_BASE}/global-search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ query })
-    });
-    return await response.json();
-  } catch (error) {
-    return { text: "Search offline.", sources: [] };
-  }
-};
-
-/**
- * 5. LICENSING HUB: Automated Client Messaging
- */
-export const generateUpdateMessage = async (auditContext: string, updateType: string) => {
-  try {
-    const response = await fetch(`${API_BASE}/generate-message`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ auditContext, updateType })
-    });
-    const data = await response.json();
-    return data.report;
-  } catch (error) {
-    return "Message generation failed.";
-  }
-};
-
-/**
- * 6. RESOURCE LEDGER: Infrastructure Optimization
- */
-export const optimizeResources = async (resourcesJson: string) => {
+/** 4. RESOURCE LEDGER (Optimization) - THE MISSING MEMBER */
+export const optimizeResources = async (resourcesJson: string): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE}/optimize-resources`, {
       method: 'POST',
@@ -112,18 +65,40 @@ export const optimizeResources = async (resourcesJson: string) => {
   }
 };
 
-/**
- * 7. BGV VAULT: Save Record to Supabase Database
- */
-export const saveAuditToVault = async (record: any) => {
+/** 5. STAKEHOLDER MESSAGING (Licensing) */
+export const generateUpdateMessage = async (auditContext: string, updateType: string): Promise<string> => {
   try {
-    const response = await fetch(`${API_BASE}/vault`, {
+    const response = await fetch(`${API_BASE}/generate-message`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(record)
+      body: JSON.stringify({ auditContext, updateType })
+    });
+    const data = await response.json();
+    return data.report;
+  } catch (error) {
+    return "Communication Drafting Failed.";
+  }
+};
+
+/** 6. GLOBAL SEARCH (Pulse) */
+export const globalBackgroundSearch = async (query: string) => {
+  try {
+    const response = await fetch(`${API_BASE}/global-search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query })
     });
     return await response.json();
   } catch (error) {
-    console.error("Vault Save Failure:", error);
+    return { text: "Search service offline.", sources: [] };
   }
+};
+
+/** 7. VAULT STORAGE (Database Sync) */
+export const saveAuditToVault = async (record: any) => {
+  return await fetch(`${API_BASE}/vault`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(record)
+  });
 };
