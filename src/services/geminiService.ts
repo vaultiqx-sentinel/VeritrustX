@@ -5,7 +5,7 @@
 
 // LOCAL TESTING: Use Port 5000
 // PRODUCTION: Replace with your Render.com URL (e.g., https://veritrustx-api.onrender.com/api)
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://veritrustx.onrender.com/api";
 
 /**
  * 1. INTEGRITY SCANNER: Forensic Scrutiny Audit
