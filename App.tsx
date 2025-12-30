@@ -112,7 +112,7 @@ const App: React.FC = () => {
       case 'business-value': return <BusinessValue />;
       case 'licensing': return <LicensingHub />;
       case 'invoice-portal': return <InvoicePortal />;
-      case 'vision-roadmap': return <VisionRoadmap />;
+      case 'vision-roadmap': return <VisionRoadmap onAction={(view) => setActiveView(view)} />;
       
       // System & Support
       case 'global-pulse': return <GlobalPulse />;
