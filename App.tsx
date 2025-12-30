@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
+import FounderAnalytics from './components/FounderAnalytics';
 import IntegrityScanner from './components/IntegrityScanner';
 import ForensicLab from './components/ForensicLab';
 import GlobalPulse from './components/GlobalPulse';
@@ -20,6 +21,7 @@ import InvoicePortal from './components/InvoicePortal';
 import CandidatePortal from './components/CandidatePortal';
 import ContactUs from './components/ContactUs';
 import Home from './components/Home';
+import StrategicBlueprint from './components/StrategicBlueprint';
 
 import { 
   Settings2, Search, AlertCircle, X, Bell, Info, 
@@ -114,7 +116,10 @@ const App: React.FC = () => {
   // --- Neural Router ---
   const renderContent = () => {
     switch (activeView) {
+      // 🟢 ADDED: NEW FOUNDER & HOME ROUTES
+      case 'ceo-command': return <FounderAnalytics />;
       case 'home': return <Home onEnter={() => setActiveView('dashboard')} onContact={() => setActiveView('contact-us')} />;
+      
       case 'dashboard': return <Dashboard isHibernation={isHibernation} records={records} />;
       case 'erp-architect': return <ERPArchitect onLogicDeploy={(d) => addSystemEvent('Logic Mutation', d, 'info')} />;
       case 'bgv-vault': return <BGVVault searchFilter={globalSearch} records={records} onShareRecord={(r) => { setSelectedRecord(r); setActiveView('shared'); }} />;
@@ -123,6 +128,7 @@ const App: React.FC = () => {
       case 'proxy-guard': return <ProxyGuard onFraudDetected={addAuditRecord} />;
       case 'resource-ledger': return <ResourceLedger />;
       case 'forensic-lab': return <ForensicLab onVerdict={addAuditRecord} />;
+      case 'strategic-blueprint': return <StrategicBlueprint />;
       case 'global-pulse': return <GlobalPulse />;
       case 'business-value': return <BusinessValue />;
       case 'updates': return <ProtocolUpdates />;
@@ -180,7 +186,7 @@ const App: React.FC = () => {
         <header className="sticky top-0 z-[60] glass-panel border-b px-10 py-5 print:hidden">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             
-            {/* 🟢 THE LOGO BUTTON (AS REQUESTED) */}
+            {/* 🟢 THE ACTIVE HEADER LOGO LOGIC */}
             <button 
               onClick={() => setActiveView('home')}
               className="flex items-center gap-6 hover:opacity-80 transition-all group"

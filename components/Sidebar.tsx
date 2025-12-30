@@ -3,7 +3,8 @@ import {
   LayoutDashboard, Search, ShieldCheck, UserCheck, Fingerprint, 
   FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
   ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
-  MessageSquare, Activity, TrendingUp, ChevronRight
+  MessageSquare, Activity, TrendingUp, ChevronRight,
+  Rocket
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
@@ -43,6 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     { id: 'legal-hub', label: 'Legal & Privacy', icon: Scale, category: 'System' },
     { id: 'updates', label: 'Update Feed', icon: Bell, badge: 'NEW', category: 'System' },
     { id: 'contact-us', label: 'Forensic Support', icon: MessageSquare, badge: '24/7', category: 'System' },
+    { id: 'strategic-blueprint', label: 'Future Blueprint', icon: Rocket, badge: 'VISION', category: 'System' },
   ];
 
   // Filter logic for the search bar
