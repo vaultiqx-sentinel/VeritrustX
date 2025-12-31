@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Printer, Landmark, ShieldCheck, ArrowLeft, Plus, 
-  Trash2, CheckCircle2, Globe, ReceiptText, Zap, Save, Edit3
+  Trash2, CheckCircle2, Globe, ReceiptText, Zap, Save, Edit3, Lock
 } from 'lucide-react';
 
 const InvoicePortal: React.FC = () => {
   const [showPreview, setShowPreview] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   // 1. Invoice Content State
   const [invoiceData, setInvoiceData] = useState({
@@ -18,22 +19,27 @@ const InvoicePortal: React.FC = () => {
     notes: 'Neural capacity will be provisioned within 120 minutes of settlement confirmation.',
   });
 
-  // 2. Bank Details State (Saves to your browser automatically)
+  // 2. Bank Details State (Logic for Savings -> Business transition)
   const [bankDetails, setBankDetails] = useState(() => {
-    const saved = localStorage.getItem('vx-bank-details');
+    const saved = localStorage.getItem('vx-founder-bank');
     return saved ? JSON.parse(saved) : {
       holderName: 'CHALLA ADITYA',
       bankName: 'HDFC BANK',
       accountNumber: '9642276736',
       ifscCode: 'VXID0009021',
       upiId: '9642276736@upi',
+      accountType: 'Personal Savings'
     };
   });
 
-  // Save bank details to local storage whenever they change
-  useEffect(() => {
-    localStorage.setItem('vx-bank-details', JSON.stringify(bankDetails));
-  }, [bankDetails]);
+  const handleSaveBankDetails = () => {
+    setIsSaving(true);
+    localStorage.setItem('vx-founder-bank', JSON.stringify(bankDetails));
+    setTimeout(() => {
+      setIsSaving(false);
+      alert("Founder Treasury Updated: New settlement logic applied to Mesh.");
+    }, 1000);
+  };
 
   const subtotal = invoiceData.items.reduce((acc, item) => acc + (item.qty * item.rate), 0);
   const tax = subtotal * 0.18; 
@@ -47,10 +53,10 @@ const InvoicePortal: React.FC = () => {
       <div className="space-y-10 animate-in fade-in duration-500 pb-20">
         <div className="flex justify-between items-center print:hidden">
           <button onClick={() => setShowPreview(false)} className="flex items-center gap-2 text-zinc-400 hover:text-zinc-900 font-black uppercase text-[10px] tracking-widest">
-            <Edit3 size={16} /> Return to Editor
+            <ArrowLeft size={16} /> Edit Details
           </button>
           <button onClick={handlePrint} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center gap-3 hover:brightness-110 shadow-2xl transition-all">
-            <Printer size={20} /> Save as Forensic PDF
+            <Printer size={20} /> Generate Institutional PDF
           </button>
         </div>
 
@@ -78,14 +84,15 @@ const InvoicePortal: React.FC = () => {
             <div className="text-right">
               <h3 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4">Settlement Authority</h3>
               <p className="text-sm font-bold">VeritrustX Global Mesh</p>
-              <p className="text-xs text-zinc-400 mt-1">Node-ID: VX-INDIA-9642</p>
+              <p className="text-xs text-zinc-400 mt-1">Remote-First Neural Operations</p>
+              <p className="text-xs text-zinc-400">Hub Node: VX-INDIA-9642</p>
             </div>
           </div>
 
           <table className="w-full mb-12">
-            <thead className="border-b-2 border-zinc-900">
-              <tr>
-                <th className="py-4 text-left text-[10px] font-black uppercase tracking-widest">Description</th>
+            <thead>
+              <tr className="border-b-2 border-zinc-900">
+                <th className="py-4 text-left text-[10px] font-black uppercase tracking-widest">Protocol Description</th>
                 <th className="py-4 text-center text-[10px] font-black uppercase tracking-widest">Qty</th>
                 <th className="py-4 text-right text-[10px] font-black uppercase tracking-widest">Total (INR)</th>
               </tr>
@@ -103,7 +110,7 @@ const InvoicePortal: React.FC = () => {
 
           <div className="flex justify-end mb-16">
              <div className="w-80 space-y-2 border-t-2 border-zinc-900 pt-4 text-right">
-                <span className="text-xs font-black uppercase tracking-widest">Grand Total: </span>
+                <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Final Settlement Total: </span>
                 <span className="text-3xl font-black text-indigo-600">₹{total.toLocaleString()}</span>
              </div>
           </div>
@@ -111,16 +118,26 @@ const InvoicePortal: React.FC = () => {
           <div className="p-10 bg-zinc-50 rounded-[3rem] border border-zinc-100 mb-12">
              <h4 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2"><Landmark size={18}/> Bank Settlement Details</h4>
              <div className="grid grid-cols-2 gap-10">
-                <div className="space-y-3"><InfoRow label="A/C Holder" value={bankDetails.holderName} /><InfoRow label="Bank Name" value={bankDetails.bankName} /><InfoRow label="A/C Number" value={bankDetails.accountNumber} /></div>
-                <div className="space-y-3"><InfoRow label="IFSC Code" value={bankDetails.ifscCode} /><InfoRow label="UPI ID" value={bankDetails.upiId} /></div>
+                <div className="space-y-3">
+                   <InfoRow label="A/C Holder" value={bankDetails.holderName} />
+                   <InfoRow label="Bank Name" value={bankDetails.bankName} />
+                   <InfoRow label="A/C Number" value={bankDetails.accountNumber} />
+                </div>
+                <div className="space-y-3">
+                   <InfoRow label="IFSC Code" value={bankDetails.ifscCode} />
+                   <InfoRow label="UPI ID" value={bankDetails.upiId} />
+                   <div className="pt-2">
+                      <span className="text-[8px] font-black uppercase bg-zinc-900 text-white px-2 py-1 rounded">{bankDetails.accountType}</span>
+                   </div>
+                </div>
              </div>
           </div>
 
-          {/* 🖋️ CEO SIGNATURE SECTION */}
           <div className="mt-20 grid grid-cols-2 gap-12 border-t-4 border-zinc-900 pt-12">
             <div className="space-y-4">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Founder's Note</h4>
-              <p className="text-xs text-zinc-600 leading-relaxed italic font-medium">"Trust is no longer a human opinion. It is a mathematical certainty. By settling this invoice, your organization is deploying a non-repudiable truth mesh."</p>
+              <p className="text-xs text-zinc-600 leading-relaxed font-medium italic">"VeritrustX was engineered to eliminate the 'Trust Gap' in hiring. By settling this invoice, your organization is deploying a non-repudiable truth mesh."</p>
+              <p className="text-[9px] font-bold text-indigo-600 uppercase mt-4">© 2025 VeriTrustX Protocol. All Rights Reserved.</p>
             </div>
             <div className="text-right">
                <div className="inline-block relative mb-2">
@@ -129,7 +146,7 @@ const InvoicePortal: React.FC = () => {
                   <div className="h-0.5 w-64 bg-zinc-900 ml-auto mt-[-5px]"></div>
                </div>
                <p className="text-sm font-black text-zinc-900 uppercase">Challa Aditya</p>
-               <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Founder & Chief Executive Officer</p>
+               <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest">Founder & Chief Executive Officer</p>
             </div>
           </div>
         </div>
@@ -138,12 +155,12 @@ const InvoicePortal: React.FC = () => {
   }
 
   return (
-    /* 🏗️ THE SETTLEMENT EDITOR MODE (DEFAULT) */
+    /* 🏗️ THE SETTLEMENT EDITOR MODE */
     <div className="space-y-10 animate-in fade-in duration-700 pb-20">
       <div className="flex justify-between items-end border-b-2 border-zinc-100 pb-8">
         <div>
           <h2 className="text-5xl font-black text-zinc-900 tracking-tighter uppercase font-quantum">Settlement <span className="accent-text">Mesh</span></h2>
-          <p className="text-zinc-500 font-medium text-lg mt-2">Institutional Invoice & Bank Detail Configuration</p>
+          <p className="text-zinc-500 font-medium text-lg mt-2 italic">Institutional Invoice & Founder Treasury Configuration</p>
         </div>
         <button onClick={() => setShowPreview(true)} className="px-10 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center gap-3 shadow-xl hover:bg-emerald-600 transition-all">
            <ReceiptText size={20} /> Preview & Sign Invoice
@@ -151,9 +168,10 @@ const InvoicePortal: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        
         {/* CLIENT & ITEMS EDITOR */}
         <div className="lg:col-span-2 space-y-8">
-           <div className="bg-white border-2 border-zinc-100 p-10 rounded-[3rem] shadow-sm space-y-8">
+           <div className="bg-white border-4 border-zinc-100 p-10 rounded-[3rem] shadow-sm space-y-10">
               <div className="space-y-6">
                 <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] ml-1">Client Metadata</h4>
                 <div className="grid grid-cols-2 gap-6">
@@ -165,11 +183,11 @@ const InvoicePortal: React.FC = () => {
 
               <div className="space-y-4">
                  <div className="flex justify-between items-center px-2">
-                    <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Protocol Line Items</h4>
+                    <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Invoice Line Items</h4>
                     <button onClick={() => setInvoiceData({...invoiceData, items: [...invoiceData.items, {description: '', qty: 1, rate: 0}]})} className="text-[10px] font-black text-indigo-600 hover:underline">Add Row +</button>
                  </div>
                  {invoiceData.items.map((item, i) => (
-                   <div key={i} className="flex gap-4 items-center">
+                   <div key={i} className="flex gap-4 items-center animate-in slide-in-from-left-2">
                       <input className="flex-1 px-6 py-3 bg-zinc-50 border-2 border-zinc-100 rounded-xl font-bold text-sm" placeholder="Service Desc" value={item.description} onChange={(e) => {
                           const newItems = [...invoiceData.items];
                           newItems[i].description = e.target.value;
@@ -180,29 +198,60 @@ const InvoicePortal: React.FC = () => {
                           newItems[i].rate = parseInt(e.target.value) || 0;
                           setInvoiceData({...invoiceData, items: newItems});
                         }} />
-                      <button onClick={() => setInvoiceData({...invoiceData, items: invoiceData.items.filter((_, idx) => idx !== i)})} className="p-2 text-zinc-300 hover:text-rose-500"><Trash2 size={18} /></button>
+                      <button onClick={() => setInvoiceData({...invoiceData, items: invoiceData.items.filter((_, idx) => idx !== i)})} className="p-2 text-zinc-300 hover:text-rose-500 transition-colors"><Trash2 size={18} /></button>
                    </div>
                  ))}
               </div>
            </div>
         </div>
 
-        {/* 🏦 YOUR BANK DETAILS EDITOR (FOUNDER ONLY) */}
+        {/* 🏦 FOUNDER'S TREASURY (UPDATABLE BANK DETAILS) */}
         <div className="space-y-6">
-           <div className="bg-zinc-900 p-10 rounded-[3rem] text-white shadow-2xl border-b-8 border-indigo-600">
+           <div className="bg-zinc-900 p-10 rounded-[3rem] text-white shadow-2xl border-b-8 border-indigo-600 relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-6 opacity-10"><Lock size={64} /></div>
               <h4 className="text-sm font-black uppercase tracking-widest flex items-center gap-3 mb-8">
                  <Landmark className="text-emerald-500" /> Founder's Treasury
               </h4>
-              <div className="space-y-4">
-                 <BankInput label="A/C Holder Name" value={bankDetails.holderName} onChange={(val) => setBankDetails({...bankDetails, holderName: val})} />
-                 <BankInput label="Bank Name" value={bankDetails.bankName} onChange={(val) => setBankDetails({...bankDetails, bankName: val})} />
-                 <BankInput label="Account Number" value={bankDetails.accountNumber} onChange={(val) => setBankDetails({...bankDetails, accountNumber: val})} />
-                 <BankInput label="IFSC Code" value={bankDetails.ifscCode} onChange={(val) => setBankDetails({...bankDetails, ifscCode: val})} />
-                 <BankInput label="UPI ID" value={bankDetails.upiId} onChange={(val) => setBankDetails({...bankDetails, upiId: val})} />
+              
+              <div className="space-y-5 relative z-10">
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">Account Holder</label>
+                    <input type="text" value={bankDetails.holderName} onChange={(e) => setBankDetails({...bankDetails, holderName: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white focus:border-emerald-500 outline-none transition-all" />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">Bank Name</label>
+                    <input type="text" value={bankDetails.bankName} onChange={(e) => setBankDetails({...bankDetails, bankName: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white focus:border-emerald-500 outline-none transition-all" />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">Account Number</label>
+                    <input type="text" value={bankDetails.accountNumber} onChange={(e) => setBankDetails({...bankDetails, accountNumber: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white focus:border-emerald-500 outline-none transition-all" />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">IFSC Code</label>
+                    <input type="text" value={bankDetails.ifscCode} onChange={(e) => setBankDetails({...bankDetails, ifscCode: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white focus:border-emerald-500 outline-none transition-all" />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">UPI ID / VPA</label>
+                    <input type="text" value={bankDetails.upiId} onChange={(e) => setBankDetails({...bankDetails, upiId: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white focus:border-emerald-500 outline-none transition-all" />
+                 </div>
+                 <div className="space-y-1">
+                    <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">Account Category</label>
+                    <select value={bankDetails.accountType} onChange={(e) => setBankDetails({...bankDetails, accountType: e.target.value})} className="w-full px-5 py-3 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white outline-none">
+                       <option className="bg-zinc-900">Personal Savings</option>
+                       <option className="bg-zinc-900">Current Business</option>
+                       <option className="bg-zinc-900">Escrow Node</option>
+                    </select>
+                 </div>
               </div>
-              <div className="mt-8 flex items-center gap-2 text-[8px] font-black text-zinc-500 uppercase">
-                 <Save size={12} /> Details Auto-Persist in Mesh
-              </div>
+
+              <button 
+                onClick={handleSaveBankDetails}
+                disabled={isSaving}
+                className="w-full mt-10 py-4 bg-emerald-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-900/40"
+              >
+                {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                Commit to Secure Mesh
+              </button>
            </div>
         </div>
       </div>
@@ -210,18 +259,11 @@ const InvoicePortal: React.FC = () => {
   );
 };
 
-// Helper Components
-const BankInput = ({ label, value, onChange }: { label: string, value: string, onChange: (v: string) => void }) => (
-  <div className="space-y-1">
-     <label className="text-[8px] font-black text-zinc-500 uppercase ml-1">{label}</label>
-     <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-white outline-none focus:border-emerald-500 transition-all" />
-  </div>
-);
-
+// Internal Helper for PDF Rows
 const InfoRow = ({ label, value }: { label: string, value: string }) => (
   <div className="flex justify-between items-center text-xs">
     <span className="text-zinc-400 font-bold uppercase tracking-widest text-[9px]">{label}</span>
-    <span className="font-black text-zinc-900">{value}</span>
+    <span className="font-black text-zinc-900">{value || '---'}</span>
   </div>
 );
 
