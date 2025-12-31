@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' })); // High limit for Forensic DNA Lab images
 
 // 1. Initialize Neural Core & Database Mesh
-if (!process.env.GEMINI_API_KEY || !process.env.SUPABASE_URL) {
+if (!process.env.GEMINI_API_KEY || !process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
     console.error("❌ CRITICAL ERROR: Environment variables missing. Check .env file.");
     process.exit(1);
 }
@@ -39,7 +39,6 @@ const flashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 const validateLicense = async (req, res, next) => {
     const { licenseKey } = req.body;
 
-    // Default "DEMO" check or missing key
     if (!licenseKey || licenseKey === "DEMO") {
         return res.status(401).json({ error: "LOCKED: A valid Neural Access Token is required for forensic uplink." });
     }
@@ -61,6 +60,27 @@ const validateLicense = async (req, res, next) => {
     req.license = license;
     next();
 };
+
+// --- 🔑 ENDPOINT: TOKEN VERIFICATION (For Candidate Portal) ---
+// This allows candidates to enter the portal only if the employer has paid.
+app.post('/api/verify-token', async (req, res) => {
+    const { licenseKey } = req.body;
+    try {
+        const { data, error } = await supabase
+            .from('licenses')
+            .select('status, credits')
+            .eq('license_key', licenseKey)
+            .single();
+
+        if (!error && data && data.status === 'Active' && data.credits > 0) {
+            res.json({ valid: true });
+        } else {
+            res.json({ valid: false });
+        }
+    } catch (err) {
+        res.status(500).json({ valid: false, error: "Connection to Registry failed." });
+    }
+});
 
 // --- 🧠 ENDPOINT: INTEGRITY AUDIT (Scanner) ---
 app.post('/api/audit', validateLicense, async (req, res) => {
@@ -141,31 +161,39 @@ app.post('/api/generate-message', async (req, res) => {
 
 // --- 🏦 ENDPOINT: VAULT STORAGE (Database) ---
 app.get('/api/vault', async (req, res) => {
-    const { data, error } = await supabase.from('audit_records').select('*').order('created_at', { ascending: false });
-    if (error) return res.status(400).json(error);
-    res.json(data);
+    try {
+        const { data, error } = await supabase.from('audit_records').select('*').order('created_at', { ascending: false });
+        if (error) return res.status(400).json(error);
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: "Vault unreachable." }); }
 });
 
 app.post('/api/vault', async (req, res) => {
-    const { data, error } = await supabase.from('audit_records').insert([req.body]);
-    if (error) return res.status(400).json(error);
-    res.json(data);
+    try {
+        const { data, error } = await supabase.from('audit_records').insert([req.body]);
+        if (error) return res.status(400).json(error);
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: "Sync failed." }); }
 });
 
 // --- 🔑 ENDPOINT: LICENSE MANAGEMENT (Founder Dash) ---
 app.get('/api/licenses', async (req, res) => {
-    const { data } = await supabase.from('licenses').select('*').order('created_at', { ascending: false });
-    res.json(data);
+    try {
+        const { data } = await supabase.from('licenses').select('*').order('created_at', { ascending: false });
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: "Registry unreachable." }); }
 });
 
 app.post('/api/activate-license', async (req, res) => {
     const { id } = req.body;
     // Founder Action: Activate license and grant 100 neural shards (credits)
-    const { data } = await supabase
-        .from('licenses')
-        .update({ status: 'Active', credits: 100 })
-        .eq('id', id);
-    res.json(data);
+    try {
+        const { data } = await supabase
+            .from('licenses')
+            .update({ status: 'Active', credits: 100 })
+            .eq('id', id);
+        res.json(data);
+    } catch (err) { res.status(500).json({ error: "Activation failed." }); }
 });
 
 // --- 🌐 ENDPOINT: GLOBAL PULSE SEARCH ---

@@ -2,20 +2,46 @@ import React, { useState } from 'react';
 import { 
   ShieldCheck, ArrowRight, Upload, Camera, 
   Fingerprint, CheckCircle2, Lock, FileText, 
-  Loader2, AlertCircle, Smartphone, Key
+  Loader2, AlertCircle, Smartphone, Key, XCircle
 } from 'lucide-react';
 
 const CandidatePortal: React.FC = () => {
   const [step, setStep] = useState<'auth' | 'upload' | 'biometric' | 'success'>('auth');
   const [inviteCode, setInviteCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [tokenError, setTokenError] = useState('');
 
-  const handleAuth = () => {
+  // 🛡️ RE-ACTIVATED TOKEN VERIFICATION LOGIC
+  const handleVerifyToken = async () => {
+    if (!inviteCode) {
+        setTokenError("REQUIRED: Please enter your access token.");
+        return;
+    }
+
     setIsProcessing(true);
-    setTimeout(() => {
+    setTokenError('');
+
+    try {
+      // This calls your backend to see if the license is ACTIVE and has credits
+      const response = await fetch(`https://veritrustx.onrender.com/api/verify-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ licenseKey: inviteCode })
+      });
+      
+      const data = await response.json();
+      
+      if (data.valid) {
+        setIsProcessing(false);
+        setStep('upload'); // Only move to upload if token is valid
+      } else {
+        setTokenError("INVALID PROTOCOL: This token is unauthorized, expired, or unpaid.");
+        setIsProcessing(false);
+      }
+    } catch (err) {
+      setTokenError("UPLINK ERROR: Neural mesh unreachable. Ensure backend is online.");
       setIsProcessing(false);
-      setStep('upload');
-    }, 1500);
+    }
   };
 
   const handleFinish = () => {
@@ -46,23 +72,39 @@ const CandidatePortal: React.FC = () => {
                    <h2 className="text-2xl font-black text-slate-900">Verify Your Identity</h2>
                    <p className="text-sm text-slate-500 font-medium">Please enter the Secure Access Token provided by your prospective employer.</p>
                 </div>
+
+                {/* 🔴 DYNAMIC ERROR BOX */}
+                {tokenError && (
+                    <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2">
+                        <XCircle className="text-rose-500" size={18} />
+                        <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">{tokenError}</p>
+                    </div>
+                )}
+
                 <div className="relative">
-                   <Key className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                   <Key className={`absolute left-5 top-1/2 -translate-y-1/2 ${tokenError ? 'text-rose-400' : 'text-slate-400'}`} size={18} />
                    <input 
                      type="text" 
                      value={inviteCode}
-                     onChange={(e) => setInviteCode(e.target.value)}
-                     className="w-full pl-14 pr-6 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all"
+                     onChange={(e) => {
+                         setInviteCode(e.target.value);
+                         setTokenError('');
+                     }}
+                     className={`w-full pl-14 pr-6 py-4 bg-slate-50 border-2 rounded-2xl text-slate-900 font-bold outline-none transition-all ${
+                         tokenError ? 'border-rose-500 ring-4 ring-rose-500/10' : 'border-slate-200 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500'
+                     }`}
                      placeholder="VX-XXXX-XXXX"
                    />
                 </div>
+
                 <button 
-                  onClick={handleAuth}
+                  onClick={handleVerifyToken}
                   disabled={!inviteCode || isProcessing}
-                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-900 transition-all shadow-xl shadow-indigo-900/20"
+                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-slate-900 transition-all shadow-xl shadow-indigo-900/20 disabled:opacity-50"
                 >
                    {isProcessing ? <Loader2 className="animate-spin" /> : 'Enter Secure Session'}
                 </button>
+
                 <div className="flex items-center gap-2 text-[10px] font-black text-slate-400 uppercase tracking-widest justify-center">
                    <Lock size={12} /> End-to-End Encrypted Session
                 </div>
@@ -83,7 +125,7 @@ const CandidatePortal: React.FC = () => {
 
                 <button 
                   onClick={() => setStep('biometric')}
-                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl"
+                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-all shadow-xl hover:bg-indigo-700"
                 >
                    Continue to Identity Check <ArrowRight size={18} />
                 </button>
@@ -97,7 +139,7 @@ const CandidatePortal: React.FC = () => {
                    <p className="text-sm text-slate-500 font-medium">We need a 5-second live capture to ensure biometric continuity.</p>
                 </div>
 
-                <div className="aspect-square max-w-[280px] mx-auto bg-slate-900 rounded-full border-8 border-slate-50 overflow-hidden relative group">
+                <div className="aspect-square max-w-[280px] mx-auto bg-slate-900 rounded-full border-8 border-slate-50 overflow-hidden relative group shadow-2xl">
                    <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3">
                       <Camera size={48} className="text-white opacity-20" />
                       <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Live Camera Standby</p>
@@ -108,7 +150,7 @@ const CandidatePortal: React.FC = () => {
                 <button 
                   onClick={handleFinish}
                   disabled={isProcessing}
-                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-xl"
+                  className="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 shadow-xl hover:bg-indigo-700"
                 >
                    {isProcessing ? <Loader2 className="animate-spin" /> : 'Complete Verification'}
                 </button>
@@ -128,7 +170,7 @@ const CandidatePortal: React.FC = () => {
                 </div>
                 <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Submission ID</p>
-                   <p className="text-sm font-mono font-bold text-slate-900">#VX-SUB-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                   <p className="text-sm font-mono font-bold text-slate-900 uppercase">#VX-SUB-{Math.random().toString(36).substring(7).toUpperCase()}</p>
                 </div>
              </div>
            )}
