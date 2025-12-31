@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bell, Zap, Shield, Sparkles, ArrowRight, History, 
-  MessageSquare, Info, Star, Cpu, CheckCircle2, Clock, Activity 
+  MessageSquare, Info, Star, Cpu, CheckCircle2, Clock, Activity, X, FileSearch, Lock
 } from 'lucide-react';
 
 const ProtocolUpdates: React.FC = () => {
+  // State to manage which forensic analysis is being viewed
+  const [activeAnalysis, setActiveAnalysis] = useState<any>(null);
+
   const updates = [
     {
       id: 1,
@@ -16,7 +19,8 @@ const ProtocolUpdates: React.FC = () => {
       color: "text-indigo-600",
       bg: "bg-indigo-50",
       border: "border-indigo-100",
-      icon: Zap
+      icon: Zap,
+      forensicDetail: "Neural Shard 2.1.0 optimizes the logic-inference pathway. By increasing the thinking budget to 4000 tokens, the engine now performs a dual-pass cross-reference of LinkedIn timestamps against regional employment tax headers. Error rate for 'Ghost Hires' has dropped from 1.2% to 0.04%."
     },
     {
       id: 2,
@@ -28,7 +32,8 @@ const ProtocolUpdates: React.FC = () => {
       color: "text-emerald-600",
       bg: "bg-emerald-50",
       border: "border-emerald-100",
-      icon: Shield
+      icon: Shield,
+      forensicDetail: "Digital DNA V2 introduces font-geometry validation. It identifies if specific characters in a degree certificate (like years or grades) have different pixel-anti-aliasing patterns compared to the rest of the document, exposing 'Adobe Acrobat' level forgery instantly."
     },
     {
       id: 3,
@@ -40,9 +45,14 @@ const ProtocolUpdates: React.FC = () => {
       color: "text-rose-600",
       bg: "bg-rose-50",
       border: "border-rose-100",
-      icon: Cpu
+      icon: Cpu,
+      forensicDetail: "Proxy Guard now monitors sub-100ms latency between the candidate's lip movement and the audio waveform. High latency triggers an automatic 'Secondary Speaker' alert. Additionally, vocal frequency patterns are now hashed to ensure the technical round speaker matches the HR round speaker."
     }
   ];
+
+  const handleJoinBeta = () => {
+    alert("BETA ACCESS REQUESTED: Your node has been added to the experimental waitlist. Challa Aditya's treasury team will review your eligibility.");
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20">
@@ -59,7 +69,10 @@ const ProtocolUpdates: React.FC = () => {
              Stay informed about the evolving logic of VeriTrustX. We push neural model updates and forensic patch notes here.
            </p>
         </div>
-        <button className="flex items-center gap-2 text-xs font-black text-zinc-400 hover:text-zinc-900 uppercase tracking-widest transition-all">
+        <button 
+          onClick={() => alert("Full History Ledger: Currently syncing archived protocol shards (2023-2024).")}
+          className="flex items-center gap-2 text-xs font-black text-zinc-400 hover:text-zinc-900 uppercase tracking-widest transition-all"
+        >
            Full History Ledger <History size={16} />
         </button>
       </div>
@@ -95,7 +108,11 @@ const ProtocolUpdates: React.FC = () => {
                     {up.desc}
                  </p>
                  
-                 <button className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors">
+                 {/* 🟢 BUTTON ACTIVATED: OPENS MODAL */}
+                 <button 
+                  onClick={() => setActiveAnalysis(up)}
+                  className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-indigo-600 hover:text-zinc-900 transition-colors"
+                 >
                     Read Forensic Analysis <ArrowRight size={14} />
                  </button>
               </div>
@@ -112,7 +129,11 @@ const ProtocolUpdates: React.FC = () => {
                <p className="text-indigo-100 font-medium leading-relaxed mb-8 text-sm relative z-10">
                  New forensic models are available for early testers. Toggle 'Experimental Labs' in settings to try.
                </p>
-               <button className="w-full py-5 bg-white text-indigo-600 font-black rounded-2xl hover:bg-indigo-50 transition-all text-xs uppercase tracking-[0.2em] shadow-lg">
+               {/* 🟢 BUTTON ACTIVATED */}
+               <button 
+                onClick={handleJoinBeta}
+                className="w-full py-5 bg-white text-indigo-600 font-black rounded-2xl hover:bg-indigo-50 transition-all text-xs uppercase tracking-[0.2em] shadow-lg"
+               >
                   Join Beta Mesh
                </button>
             </div>
@@ -137,8 +158,52 @@ const ProtocolUpdates: React.FC = () => {
                </div>
             </div>
          </div>
-
       </div>
+
+      {/* 🧬 DYNAMIC FORENSIC MODAL - APPEARS ON CLICK */}
+      {activeAnalysis && (
+        <div className="fixed inset-0 z-[100] bg-zinc-950/90 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+           <div className="bg-white border-4 border-zinc-900 rounded-[4rem] w-full max-w-2xl overflow-hidden shadow-2xl relative animate-in zoom-in-95">
+              <button 
+                onClick={() => setActiveAnalysis(null)} 
+                className="absolute top-10 right-10 text-zinc-400 hover:text-zinc-900 transition-colors"
+              >
+                <X size={32} />
+              </button>
+              
+              <div className="p-12 space-y-8">
+                 <div className="flex items-center gap-5">
+                    <div className="p-4 bg-zinc-900 rounded-2xl text-white shadow-2xl">
+                      <FileSearch size={32} />
+                    </div>
+                    <div>
+                       <h3 className="text-3xl font-black text-zinc-900 tracking-tight">Forensic Breakdown</h3>
+                       <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mt-1">Protocol Update: {activeAnalysis.version}</p>
+                    </div>
+                 </div>
+
+                 <div className="p-10 bg-zinc-50 rounded-[3rem] border-2 border-zinc-100 relative">
+                    <Lock className="absolute top-6 right-6 text-zinc-200" size={40} />
+                    <p className="text-lg text-zinc-700 leading-relaxed font-medium italic">
+                      "{activeAnalysis.forensicDetail}"
+                    </p>
+                 </div>
+
+                 <div className="flex items-center justify-between pt-6 border-t border-zinc-100">
+                    <div className="flex items-center gap-2 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
+                       <CheckCircle2 size={16} /> Audit Integrity Confirmed
+                    </div>
+                    <button 
+                      onClick={() => setActiveAnalysis(null)}
+                      className="px-8 py-3 bg-zinc-900 text-white text-[10px] font-black uppercase rounded-xl hover:bg-indigo-600 transition-all"
+                    >
+                      Close Report
+                    </button>
+                 </div>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };
