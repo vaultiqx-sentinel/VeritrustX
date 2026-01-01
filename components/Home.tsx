@@ -112,21 +112,29 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
          </div>
       </section>
 
-      {/* 📞 CONTACT QUICK ACCESS */}
-      <section className="bg-white border-4 border-zinc-950 rounded-[4rem] p-16 flex flex-col md:flex-row items-center justify-between gap-12 mx-10 shadow-2xl">
-         <div className="space-y-4 text-center md:text-left">
+      {/* 📞 CONTACT QUICK ACCESS - FIXED FOR HIGH VISIBILITY */}
+      <section className="bg-white border-4 border-zinc-950 rounded-[4rem] p-16 flex flex-col xl:flex-row items-center justify-between gap-12 mx-10 shadow-2xl">
+         <div className="space-y-4 text-center xl:text-left max-w-xl">
             <h3 className="text-4xl font-black text-zinc-900 font-quantum">Ready to Secure <br />Your Pipeline?</h3>
-            <p className="text-lg text-zinc-500 font-medium">Uplink with our Forensic Desk for a private institutional demonstration.</p>
+            <p className="text-lg text-zinc-500 font-medium">Uplink with our Forensic Desk for a private <span className="text-zinc-900 font-bold">institutional</span> demonstration.</p>
          </div>
-         <div className="flex flex-col gap-4 w-full md:w-auto">
-            <div className="flex items-center gap-6 p-8 bg-zinc-50 rounded-[2.5rem] border-2 border-zinc-100 shadow-sm">
-               <div className="p-4 bg-white rounded-2xl shadow-sm text-emerald-600 border border-zinc-100"><MessageSquare size={32} /></div>
-               <div>
+         
+         <div className="flex flex-col sm:flex-row items-center gap-6 w-full xl:w-auto">
+            {/* Phone Number Container - Forced to stay on one line */}
+            <div className="flex items-center gap-6 p-8 bg-zinc-50 rounded-[2.5rem] border-2 border-zinc-100 shadow-sm min-w-fit">
+               <div className="p-4 bg-white rounded-2xl shadow-sm text-emerald-600 border border-zinc-100 flex-shrink-0">
+                  <MessageSquare size={32} />
+               </div>
+               <div className="whitespace-nowrap">
                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Forensic Hotline</p>
-                  <p className="text-2xl font-black text-zinc-900">+91-9642276736</p>
+                  <p className="text-2xl font-black text-zinc-900 tracking-tight">+91 96422 76736</p>
                </div>
             </div>
-            <button onClick={onContact} className="w-full py-6 bg-zinc-900 text-white font-black rounded-3xl uppercase text-xs tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-xl shadow-zinc-900/20 active:scale-95">
+
+            <button 
+               onClick={onContact} 
+               className="w-full sm:w-64 py-6 bg-zinc-900 text-white font-black rounded-3xl uppercase text-xs tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-xl shadow-zinc-900/20 active:scale-95 flex-shrink-0"
+            >
                Initiate Strategic Uplink
             </button>
          </div>
