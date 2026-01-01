@@ -4,7 +4,7 @@ import {
   FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
   ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
   MessageSquare, Activity, TrendingUp, ChevronRight,
-  Rocket
+  Rocket, Crown
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
@@ -20,6 +20,9 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
 
   // EVERY logical endpoint of VeritrustX mapped here
   const navItems = [
+    // --- FOUNDER AUTHORITY ---
+    { id: 'ceo-command', label: 'CEO Command', icon: Crown, badge: 'FOUNDER', category: 'Founder' },
+
     // --- CORE LOGIC ---
     { id: 'home', label: 'Institutional Home', icon: Globe, category: 'Core' },
     { id: 'erp-architect', label: 'ERP Architect', icon: Code2, badge: 'NEW', category: 'Core' },
@@ -87,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
 
       {/* 🧭 NAVIGATION MESH (CATEGORIZED) */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-8 custom-scrollbar">
-        {['Core', 'Scanning', 'Business', 'System'].map(category => {
+        {['Founder', 'Core', 'Scanning', 'Business', 'System'].map(category => {
           const categoryItems = filteredItems.filter(item => item.category === category);
           if (categoryItems.length === 0) return null;
           return (
@@ -115,6 +118,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
                     </div>
                     {item.badge && (
                       <span className={`text-[8px] px-1.5 py-0.5 rounded font-black whitespace-nowrap ${
+                        item.badge === 'FOUNDER' ? 'bg-amber-500 text-white shadow-sm' :
                         item.badge === 'LIVE' ? 'bg-rose-600 text-white' : 
                         item.badge === 'DNA' ? 'bg-orange-600 text-white' :
                         item.badge === 'GROWTH' ? 'bg-amber-500 text-white' :
@@ -162,7 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
               <span className="text-[8px] font-black text-zinc-900 uppercase tracking-widest">Protocol Secured</span>
            </div>
            <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
-              © 2025 VeriTrustX Protocol. <br /> 
+              © 2026 VeriTrustX Protocol. <br /> 
               Global Integrity Standard. <br /> 
               All Rights Reserved.
            </p>
