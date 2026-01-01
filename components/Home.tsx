@@ -123,7 +123,7 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
                <div className="p-4 bg-white rounded-2xl shadow-sm text-emerald-600 border border-zinc-100"><MessageSquare size={32} /></div>
                <div>
                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Forensic Hotline</p>
-                  <p className="text-2xl font-black text-zinc-900">+91 96422 76736</p>
+                  <p className="text-2xl font-black text-zinc-900">+91 9642276736</p>
                </div>
             </div>
             <button onClick={onContact} className="w-full py-6 bg-zinc-900 text-white font-black rounded-3xl uppercase text-xs tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-xl shadow-zinc-900/20 active:scale-95">
