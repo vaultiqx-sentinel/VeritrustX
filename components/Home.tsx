@@ -3,7 +3,7 @@ import {
   ShieldCheck, ArrowRight, Globe, Zap, 
   Award, Lock, Cpu, MessageSquare, 
   CheckCircle2, Fingerprint, Quote, 
-  Sparkles
+  Sparkles, Mail
 } from 'lucide-react';
 
 interface HomeProps {
@@ -37,7 +37,7 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
               The Standard <br /> for <span className="accent-text">Institutional</span> Truth.
            </h1>
            <p className="text-xl text-zinc-400 font-medium leading-relaxed max-w-2xl">
-              VeriTrustX is the world’s first <span className="text-white font-bold underline decoration-emerald-500/50">Neural Verification Mesh</span>. We protect organizations from the $50B global fraud crisis by converting professional identity into non-repudiable code.
+              VeriTrustX is the world’s first <span className="text-white font-bold border-b-2 border-emerald-500/50">Neural Verification Mesh</span>. We protect organizations from the $50B global fraud crisis by converting professional identity into non-repudiable code.
            </p>
            <div className="flex flex-wrap gap-6">
               <button onClick={onEnter} className="px-10 py-5 accent-bg text-white font-black rounded-2xl flex items-center gap-3 hover:scale-105 transition-all shadow-xl shadow-emerald-900/20 group">
@@ -60,38 +60,41 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
             <div className="relative">
                <Quote className="absolute -top-10 -left-10 text-indigo-100 opacity-30" size={80} />
                <p className="text-3xl font-black text-zinc-900 leading-tight italic relative z-10">
-                  "Traditional background checks are a 20th-century solution to a 21st-century fraud crisis. VeriTrustX was engineered to move trust from human opinion into immutable logic."
+                  "The global economy is facing a Truth Crisis. VeriTrustX was engineered to move institutional trust from human opinion into immutable forensic logic."
                </p>
             </div>
             <div className="space-y-6 text-lg text-zinc-500 font-medium leading-relaxed border-l-4 border-zinc-100 pl-8">
                <p>
-                  Global hiring is facing a <strong>Truth Crisis</strong>. Industrialized resume fraud and AI-voice masking have turned standard BGV into a dangerous bottleneck for growth. 
+                  Industrialized resume fraud and AI-voice masking have turned standard Background Verification (BGV) into a dangerous bottleneck. 
                </p>
                <p>
                   As Founder, my mission is to provide organizations with <strong>Forensic Neural Scrutiny</strong>. We don't just verify claims; we ground identities in absolute institutional reality.
                </p>
             </div>
             
-            {/* 🖋️ CEO DIGITAL SIGNATURE */}
+            {/* 🖋️ CEO DIGITAL SIGNATURE (EDWARDIAN STYLE) */}
             <div className="flex items-center gap-8 pt-8 border-t border-zinc-100">
-               <div>
-                  <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: '48px' }} className="text-indigo-600 transform -rotate-2 select-none">
+               <div className="relative">
+                  <p style={{ fontFamily: "'Great Vibes', cursive", fontSize: '54px' }} className="text-indigo-600 transform -rotate-2 select-none">
                     Challa Aditya
                   </p>
-                  <p className="text-sm font-black text-zinc-900 uppercase tracking-tighter mt-[-5px]">Challa Aditya</p>
+                  <p className="text-sm font-black text-zinc-900 uppercase tracking-tighter mt-[-10px]">Challa Aditya</p>
                   <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Founder & CEO, VeriTrustX</p>
                </div>
                <div className="h-12 w-px bg-zinc-100"></div>
-               <div className="flex items-center gap-2">
-                  <ShieldCheck className="text-emerald-500" size={20} />
-                  <span className="text-[9px] font-black uppercase text-zinc-400 tracking-widest leading-tight">Identity <br />Grounded</span>
+               <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                     <ShieldCheck className="text-emerald-500" size={16} />
+                     <span className="text-[10px] font-black uppercase text-zinc-900 tracking-widest">Identity Grounded</span>
+                  </div>
+                  <span className="text-[9px] font-bold text-zinc-400 uppercase">Audit Authority Node: 001</span>
                </div>
             </div>
          </div>
 
          <div className="bg-zinc-50 rounded-[4rem] p-12 border-2 border-zinc-100 relative shadow-inner">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-               <TrustPillar icon={Zap} title="Zero-Lag" desc="Forensic audits complete in <240 seconds." />
+               <TrustPillar icon={Zap} title="Zero-Lag" desc="Forensic audits complete in under 240 seconds." />
                <TrustPillar icon={ShieldCheck} title="Non-Repudiable" desc="Results that hold legal and forensic weight." />
                <TrustPillar icon={Fingerprint} title="Biometric" desc="Ensuring continuity across interview cycles." />
                <TrustPillar icon={Globe} title="Grounded" desc="Verified against global institutional nodes." />
@@ -106,42 +109,55 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
             <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">The Bedrock of Professional Integrity</p>
          </div>
          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            <FeatureBox title="Logic Matching" desc="Our Gemini-powered core identifies timeline fractures that human auditors miss by analyzing 4000+ data logic points." />
+            <FeatureBox title="Logic Matching" desc="Our Gemini-powered core identifies timeline fractures that human auditors miss by analyzing 4000+ data points." />
             <FeatureBox title="Digital DNA" desc="Pixel-level forensic analysis detects document tampering, template manipulation, and metadata forgery instantly." />
             <FeatureBox title="Neural Schema" desc="An evolving database architecture that learns and adapts to new fraud vectors as they appear globally." />
          </div>
       </section>
 
-      {/* 📞 CONTACT QUICK ACCESS - FIXED FOR HIGH VISIBILITY */}
-      <section className="bg-white border-4 border-zinc-950 rounded-[4rem] p-16 flex flex-col xl:flex-row items-center justify-between gap-12 mx-10 shadow-2xl">
+      {/* 📞 CONTACT QUICK ACCESS */}
+      <section className="bg-white border-4 border-zinc-950 rounded-[4rem] p-16 flex flex-col xl:flex-row items-center justify-between gap-12 mx-10 shadow-2xl relative overflow-hidden">
+         <div className="absolute top-0 left-0 w-full h-2 bg-zinc-900"></div>
          <div className="space-y-4 text-center xl:text-left max-w-xl">
             <h3 className="text-4xl font-black text-zinc-900 font-quantum">Ready to Secure <br />Your Pipeline?</h3>
-            <p className="text-lg text-zinc-500 font-medium">Uplink with our Forensic Desk for a private <span className="text-zinc-900 font-bold">institutional</span> demonstration.</p>
+            <p className="text-lg text-zinc-500 font-medium leading-relaxed">Uplink with our Forensic Desk for a private <span className="text-zinc-900 font-bold">institutional demonstration</span>.</p>
          </div>
          
-         <div className="flex flex-col sm:flex-row items-center gap-6 w-full xl:w-auto">
-            {/* Phone Number Container - Forced to stay on one line */}
-            <div className="flex items-center gap-6 p-8 bg-zinc-50 rounded-[2.5rem] border-2 border-zinc-100 shadow-sm min-w-fit">
-               <div className="p-4 bg-white rounded-2xl shadow-sm text-emerald-600 border border-zinc-100 flex-shrink-0">
-                  <MessageSquare size={32} />
-               </div>
-               <div className="whitespace-nowrap">
-                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Forensic Hotline</p>
-                  <p className="text-2xl font-black text-zinc-900 tracking-tight">+91 96422 76736</p>
-               </div>
+         <div className="flex flex-col gap-6 w-full xl:w-auto">
+            {/* Contact Information Hub */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="flex items-center gap-4 p-6 bg-zinc-50 rounded-3xl border-2 border-zinc-100 shadow-sm min-w-fit">
+                    <div className="p-3 bg-white rounded-xl shadow-sm text-emerald-600 border border-zinc-100">
+                        <MessageSquare size={24} />
+                    </div>
+                    <div className="whitespace-nowrap">
+                        <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Forensic Hotline</p>
+                        <p className="text-lg font-black text-zinc-900 tracking-tight">+91 96422 76736</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-4 p-6 bg-zinc-50 rounded-3xl border-2 border-zinc-100 shadow-sm min-w-fit">
+                    <div className="p-3 bg-white rounded-xl shadow-sm text-indigo-600 border border-zinc-100">
+                        <Mail size={24} />
+                    </div>
+                    <div className="whitespace-nowrap">
+                        <p className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Protocol Email</p>
+                        <p className="text-sm font-black text-zinc-900">veritrustx.protocol@gmail.com</p>
+                    </div>
+                </div>
             </div>
 
             <button 
                onClick={onContact} 
-               className="w-full sm:w-64 py-6 bg-zinc-900 text-white font-black rounded-3xl uppercase text-xs tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-xl shadow-zinc-900/20 active:scale-95 flex-shrink-0"
+               className="w-full py-6 bg-zinc-900 text-white font-black rounded-3xl uppercase text-xs tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-xl shadow-zinc-900/20 active:scale-95 flex items-center justify-center gap-3"
             >
-               Initiate Strategic Uplink
+               Initiate Strategic Uplink <ArrowRight size={18} />
             </button>
          </div>
       </section>
 
-      <div className="text-center pt-10">
-        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX Protocol • Global Integrity Standard • IP of Challa Aditya</p>
+      <div className="text-center pt-10 border-t border-zinc-100 mx-10">
+        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX Protocol • Global Integrity Standard • Intellectual Property of Challa Aditya</p>
       </div>
     </div>
   );
