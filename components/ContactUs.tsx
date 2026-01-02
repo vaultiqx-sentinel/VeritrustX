@@ -88,7 +88,7 @@ const ContactUs: React.FC = () => {
                  <div className="p-3 bg-white/5 rounded-xl border border-white/10 h-fit"><Mail className="text-emerald-500" size={20} /></div>
                  <div>
                     <p className="text-sm font-black">Uplink Address</p>
-                    <p className="text-sm font-medium text-zinc-300 mt-1">protocol@veritrustx.io</p>
+                    <p className="text-sm font-medium text-zinc-300 mt-1">veritrustx.protocol@gmail.com</p>
                  </div>
                </div>
             </div>

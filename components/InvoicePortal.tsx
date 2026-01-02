@@ -32,10 +32,10 @@ const InvoicePortal: React.FC = () => {
     const saved = localStorage.getItem('vx-founder-bank');
     return saved ? JSON.parse(saved) : {
       holderName: 'CHALLA ADITYA',
-      bankName: 'HDFC BANK',
-      accountNumber: '9642276736',
-      ifscCode: 'VXID0009021',
-      upiId: '9642276736@upi',
+      bankName: '141701544314 BANK',
+      accountNumber: '141701544314',
+      ifscCode: 'ICIC0001417',
+      upiId: 'challaadityaa326@icici',
       accountType: 'Personal Savings'
     };
   });
