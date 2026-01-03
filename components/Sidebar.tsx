@@ -4,8 +4,7 @@ import {
   FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
   ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
   MessageSquare, Activity, TrendingUp, ChevronRight,
-  Rocket, Crown,
-  FileText
+  Rocket, Crown, FileText
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
@@ -19,7 +18,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentTheme, onThemeChange }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // EVERY logical endpoint of VeritrustX mapped here
+  // 🛡️ THE COMPLETE VERITRUSTX NAVIGATION MESH
   const navItems = [
     // --- FOUNDER AUTHORITY ---
     { id: 'ceo-command', label: 'CEO Command', icon: Crown, badge: 'FOUNDER', category: 'Founder' },
@@ -49,17 +48,43 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     { id: 'updates', label: 'Update Feed', icon: Bell, badge: 'NEW', category: 'System' },
     { id: 'contact-us', label: 'Forensic Support', icon: MessageSquare, badge: '24/7', category: 'System' },
     { id: 'strategic-blueprint', label: 'Future Blueprint', icon: Rocket, badge: 'VISION', category: 'System' },
-      // Optional: Add to navItems in Sidebar.tsx
-{ id: 'newsletter', label: 'Integrity Mesh', icon: FileText, badge: 'INTEL', category: 'System' },
+    { id: 'newsletter', label: 'Integrity Mesh', icon: FileText, badge: 'INTEL', category: 'System' },
   ];
 
-  // Filter logic for the search bar
   const filteredItems = navItems.filter(item => 
     item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const NavButton = ({ id, label, icon: Icon, badge }: any) => (
+    <button
+      onClick={() => setActiveView(id)}
+      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
+        activeView === id 
+        ? `accent-bg text-white font-bold shadow-lg scale-[1.02]`
+        : currentTheme === 'onyx' 
+          ? 'text-zinc-500 hover:bg-white/5 hover:text-white' 
+          : 'text-zinc-500 hover:bg-emerald-50 hover:text-emerald-700'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <Icon size={18} className={activeView === id ? 'text-white' : 'opacity-70'} />
+        <span className="text-sm font-medium">{label}</span>
+      </div>
+      {badge && (
+        <span className={`text-[8px] px-1.5 py-0.5 rounded font-black whitespace-nowrap ${
+          badge === 'FOUNDER' ? 'bg-amber-500 text-white shadow-sm' :
+          badge === 'INTEL' ? 'bg-indigo-500 text-white' :
+          badge === 'LIVE' ? 'bg-rose-600 text-white' : 
+          badge === 'DNA' ? 'bg-orange-600 text-white' :
+          badge === 'GROWTH' ? 'bg-amber-500 text-white' :
+          'bg-emerald-100 text-emerald-700 border border-emerald-200'
+        }`}>{badge}</span>
+      )}
+    </button>
+  );
+
   return (
-    <aside className={`w-64 border-r h-screen flex flex-col fixed left-0 top-0 z-20 print:hidden transition-all duration-500 ${currentTheme === 'onyx' ? 'bg-zinc-950 border-white/5' : 'bg-white border-emerald-50 shadow-sm'}`}>
+    <aside className={`w-64 border-r h-full flex flex-col fixed left-0 top-0 z-20 print:hidden transition-all duration-500 ${currentTheme === 'onyx' ? 'bg-zinc-950 border-white/5' : 'bg-white border-emerald-50 shadow-sm'}`}>
       
       {/* 🛡️ BRAND SECTION - ACTIVE LOGO BUTTON */}
       <button 
@@ -104,31 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
               </div>
               <div className="space-y-1">
                 {categoryItems.map(item => (
-                  <button
-                    key={item.id}
-                    onClick={() => setActiveView(item.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
-                      activeView === item.id 
-                      ? `accent-bg text-white font-bold shadow-lg scale-[1.02]`
-                      : currentTheme === 'onyx' 
-                        ? 'text-zinc-500 hover:bg-white/5 hover:text-white' 
-                        : 'text-zinc-500 hover:bg-emerald-50 hover:text-emerald-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <item.icon size={18} className={activeView === item.id ? 'text-white' : 'opacity-70'} />
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </div>
-                    {item.badge && (
-                      <span className={`text-[8px] px-1.5 py-0.5 rounded font-black whitespace-nowrap ${
-                        item.badge === 'FOUNDER' ? 'bg-amber-500 text-white shadow-sm' :
-                        item.badge === 'LIVE' ? 'bg-rose-600 text-white' : 
-                        item.badge === 'DNA' ? 'bg-orange-600 text-white' :
-                        item.badge === 'GROWTH' ? 'bg-amber-500 text-white' :
-                        'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                      }`}>{item.badge}</span>
-                    )}
-                  </button>
+                  <NavButton key={item.id} {...item} />
                 ))}
               </div>
             </div>

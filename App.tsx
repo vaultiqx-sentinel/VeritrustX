@@ -25,7 +25,7 @@ import StrategicBlueprint from './components/StrategicBlueprint';
 
 import { 
   Settings2, Search, AlertCircle, X, Bell, Info, 
-  Fingerprint, CheckCircle2, ShieldAlert, Cpu, MessageSquare, Clock, Activity, FileText, ExternalLink
+  Fingerprint, CheckCircle2, ShieldAlert, Cpu, MessageSquare, Clock, Activity, FileText, ExternalLink, Menu
 } from 'lucide-react';
 
 export type VeritrustTheme = 'emerald' | 'indigo' | 'onyx';
@@ -43,6 +43,7 @@ export interface VaultRecord {
 const App: React.FC = () => {
   // --- Global State Management ---
   const [activeView, setActiveView] = useState<string>('home');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 📱 ADDED FOR MOBILE
   const [globalSearch, setGlobalSearch] = useState('');
   const [protocolName, setProtocolName] = useState(localStorage.getItem('veritrustx-name') || 'VERITRUSTX');
   const [isHibernation, setIsHibernation] = useState(localStorage.getItem('is-hibernation') === 'true');
@@ -138,7 +139,6 @@ const App: React.FC = () => {
       case 'legal-hub': return <LegalHub />;
       case 'contact-us': return <ContactUs />;
       
-      // 🟢 ADDED: NEWSLETTER ROUTER
       case 'newsletter':
         return (
           <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
@@ -159,9 +159,6 @@ const App: React.FC = () => {
                  </div>
               </div>
             </div>
-            <div className="p-10 bg-white border-4 border-zinc-100 rounded-[3rem] text-center">
-               <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">Institutional Knowledge Base • Issue #001 Deployed</p>
-            </div>
           </div>
         );
 
@@ -180,20 +177,6 @@ const App: React.FC = () => {
                   className={`w-full px-6 py-4 rounded-2xl font-bold outline-none transition-all font-quantum ${theme === 'onyx' ? 'bg-black border-white/10 text-white' : 'bg-emerald-50/30 border-emerald-100 text-zinc-900'}`}
                 />
               </div>
-              <div className={`p-8 rounded-[2.5rem] space-y-4 border ${theme === 'onyx' ? 'bg-white/5 border-white/5' : 'bg-emerald-50/20 border-emerald-50'}`}>
-                 <div className="flex items-center justify-between">
-                    <div>
-                       <h4 className="font-black dark:text-white text-zinc-900">Presentation Hibernation</h4>
-                       <p className="text-[10px] text-zinc-400 uppercase font-black tracking-widest mt-1">Freezes neural logic for demos</p>
-                    </div>
-                    <button 
-                      onClick={() => { const v = !isHibernation; setIsHibernation(v); localStorage.setItem('is-hibernation', String(v)); }}
-                      className={`w-14 h-8 rounded-full transition-all relative ${isHibernation ? 'bg-emerald-600' : 'bg-zinc-200'}`}
-                    >
-                      <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${isHibernation ? 'left-7' : 'left-1'}`}></div>
-                    </button>
-                 </div>
-              </div>
             </div>
           </div>
         </div>
@@ -204,34 +187,55 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex selection:bg-emerald-500/30 font-sans relative theme-${theme}`}>
-      <Sidebar activeView={activeView} setActiveView={setActiveView} currentTheme={theme} onThemeChange={handleThemeChange} />
+      
+      {/* 📱 MOBILE SIDEBAR OVERLAY */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[70] lg:hidden animate-in fade-in duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        ></div>
+      )}
 
-      <main className="flex-1 ml-64 min-h-screen flex flex-col relative z-10 print:ml-0">
+      {/* 🧭 SIDEBAR - MODIFIED FOR MOBILE SLIDE */}
+      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-[80] lg:z-20`}>
+        <Sidebar 
+          activeView={activeView} 
+          setActiveView={(v) => { setActiveView(v); setIsSidebarOpen(false); }} 
+          currentTheme={theme} 
+          onThemeChange={handleThemeChange} 
+        />
+      </div>
+
+      <main className="flex-1 lg:ml-64 min-h-screen flex flex-col relative z-10 print:ml-0">
         
         {/* --- GLOBAL STICKY HEADER --- */}
-        <header className="sticky top-0 z-[60] glass-panel border-b px-10 py-5 print:hidden">
+        <header className="sticky top-0 z-[60] glass-panel border-b px-6 lg:px-10 py-5 print:hidden">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             
-            {/* 🟢 THE ACTIVE HEADER LOGO LOGIC */}
-            <button 
-              onClick={() => setActiveView('home')}
-              className="flex items-center gap-6 hover:opacity-80 transition-all group"
-            >
-              <div className="text-xl font-black tracking-tighter flex items-center gap-3 font-quantum">
-                  <div className="p-2 accent-bg rounded-lg shadow-lg text-white group-hover:rotate-12 transition-transform">
-                    <Fingerprint size={18} />
-                  </div>
-                  <span className="dark:text-white text-zinc-900">
-                    {protocolName.toUpperCase()}
-                  </span>
-              </div>
-            </button>
+            <div className="flex items-center gap-4">
+              {/* 📱 MOBILE BURGER MENU BUTTON */}
+              <button 
+                onClick={() => setIsSidebarOpen(true)}
+                className="p-2 -ml-2 text-zinc-600 hover:bg-zinc-100 rounded-xl lg:hidden transition-all"
+              >
+                <Menu size={24} />
+              </button>
 
-            <div className="h-8 w-px bg-zinc-200/20 mx-4"></div>
-            
-            {/* --- GLOBAL SEARCH BAR --- */}
-            <div className="flex-1 max-w-xl px-10">
-              <div className="relative group">
+              <button 
+                onClick={() => setActiveView('home')}
+                className="flex items-center gap-3 group hover:opacity-80 transition-all"
+              >
+                <div className="p-2 accent-bg rounded-lg shadow-lg text-white group-hover:rotate-12 transition-transform">
+                  <Fingerprint size={18} />
+                </div>
+                <span className="text-lg lg:text-xl font-black font-quantum dark:text-white text-zinc-900">
+                  {protocolName.toUpperCase()}
+                </span>
+              </button>
+            </div>
+
+            <div className="hidden md:flex flex-1 max-w-xl px-10">
+              <div className="relative group w-full">
                 <Search className={`absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:accent-text`} size={16} />
                 <input 
                   type="text" 
@@ -243,9 +247,7 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            {/* --- TOP ACTIONS: NOTIFICATIONS & SETTINGS --- */}
-            <div className="flex items-center gap-6">
-              <div className="relative">
+            <div className="flex items-center gap-3 lg:gap-6">
                 <button 
                   onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                   className={`p-2 transition-all rounded-xl ${isNotificationsOpen ? 'accent-bg text-white shadow-lg' : 'text-zinc-400 hover:accent-text'}`}
@@ -255,55 +257,20 @@ const App: React.FC = () => {
                     <span className={`absolute top-1 right-1 w-2.5 h-2.5 rounded-full border-2 border-zinc-900 bg-rose-500 animate-pulse`}></span>
                   )}
                 </button>
-
-                {/* NOTIFICATION FEED DROPDOWN */}
-                {isNotificationsOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setIsNotificationsOpen(false)}></div>
-                    <div className={`absolute right-0 mt-4 w-96 rounded-[2.5rem] shadow-2xl z-20 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 border ${theme === 'onyx' ? 'bg-zinc-950 border-white/10' : 'bg-white border-emerald-50'}`}>
-                       <div className={`p-6 border-b flex justify-between items-center ${theme === 'onyx' ? 'bg-black/50 border-white/5' : 'bg-emerald-50/30 border-emerald-50'}`}>
-                          <h4 className="text-sm font-black uppercase tracking-widest dark:text-white text-zinc-900">Neural Alert Feed</h4>
-                          <span className="text-[10px] font-black bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-full">{notifications.length} Alerts</span>
-                       </div>
-                       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                          {notifications.map(n => (
-                            <div key={n.id} className={`p-5 hover:bg-emerald-50/30 border-b transition-colors group ${theme === 'onyx' ? 'border-white/5' : 'border-emerald-50'}`}>
-                               <div className="flex gap-4">
-                                  <div className={`mt-1 p-2 rounded-lg shrink-0 ${n.type === 'critical' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
-                                     {n.type === 'critical' ? <ShieldAlert size={16} /> : n.type === 'success' ? <CheckCircle2 size={16} /> : <Cpu size={16} />}
-                                  </div>
-                                  <div className="flex-1">
-                                     <div className="flex justify-between items-start">
-                                        <p className="text-xs font-black dark:text-white text-zinc-900">{n.title}</p>
-                                        <span className="text-[9px] font-bold text-zinc-400">{n.time}</span>
-                                     </div>
-                                     <p className="text-[11px] text-zinc-500 font-medium leading-relaxed mt-1">{n.message}</p>
-                                  </div>
-                               </div>
-                            </div>
-                          ))}
-                       </div>
-                    </div>
-                  </>
-                )}
-              </div>
-              <button 
-                onClick={() => setActiveView('settings')} 
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${theme === 'onyx' ? 'bg-white/5 border-white/10 text-white hover:bg-white/10' : 'bg-emerald-50/50 border-emerald-100 text-emerald-700 hover:bg-emerald-100'}`}
-              >
-                <Settings2 size={14} /> Config
-              </button>
+                <button onClick={() => setActiveView('settings')} className="hidden sm:flex p-2 text-zinc-400 hover:accent-text transition-all">
+                  <Settings2 size={20} />
+                </button>
             </div>
           </div>
         </header>
 
         {/* --- MAIN CONTENT SLOT --- */}
-        <div className="p-10 lg:p-16 max-w-7xl mx-auto w-full flex-1 print:p-0 print:max-w-none">
+        <div className="p-6 lg:p-16 max-w-7xl mx-auto w-full flex-1 print:p-0 print:max-w-none">
           {renderContent()}
         </div>
 
         {/* --- 📟 GLOBAL ACTIVITY LEDGER WIDGET --- */}
-        <div className="fixed bottom-10 right-10 z-50 print:hidden">
+        <div className="fixed bottom-10 right-10 z-50 print:hidden hidden sm:block">
            <div className={`text-white rounded-[2rem] shadow-2xl p-6 w-80 border relative group hover:w-96 transition-all overflow-hidden ${theme === 'onyx' ? 'bg-zinc-900 border-white/10' : 'bg-zinc-950 border-white/5'}`}>
               <div className="flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
