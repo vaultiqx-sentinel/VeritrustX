@@ -25,7 +25,7 @@ import StrategicBlueprint from './components/StrategicBlueprint';
 
 import { 
   Settings2, Search, AlertCircle, X, Bell, Info, 
-  Fingerprint, CheckCircle2, ShieldAlert, Cpu, MessageSquare, Clock, Activity
+  Fingerprint, CheckCircle2, ShieldAlert, Cpu, MessageSquare, Clock, Activity, FileText, ExternalLink
 } from 'lucide-react';
 
 export type VeritrustTheme = 'emerald' | 'indigo' | 'onyx';
@@ -116,10 +116,8 @@ const App: React.FC = () => {
   // --- Neural Router ---
   const renderContent = () => {
     switch (activeView) {
-      // 🟢 ADDED: NEW FOUNDER & HOME ROUTES
-      case 'ceo-command': return <FounderAnalytics />;
       case 'home': return <Home onEnter={() => setActiveView('dashboard')} onContact={() => setActiveView('contact-us')} />;
-      
+      case 'ceo-command': return <FounderAnalytics />;
       case 'dashboard': return <Dashboard isHibernation={isHibernation} records={records} />;
       case 'erp-architect': return <ERPArchitect onLogicDeploy={(d) => addSystemEvent('Logic Mutation', d, 'info')} />;
       case 'bgv-vault': return <BGVVault searchFilter={globalSearch} records={records} onShareRecord={(r) => { setSelectedRecord(r); setActiveView('shared'); }} />;
@@ -139,6 +137,34 @@ const App: React.FC = () => {
       case 'vision-roadmap': return <VisionRoadmap onAction={(v) => setActiveView(v)} />;
       case 'legal-hub': return <LegalHub />;
       case 'contact-us': return <ContactUs />;
+      
+      // 🟢 ADDED: NEWSLETTER ROUTER
+      case 'newsletter':
+        return (
+          <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
+            <div className="bg-zinc-900 rounded-[4rem] p-16 text-white text-center border-b-8 border-indigo-600 shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-10 opacity-10"><FileText size={160} /></div>
+              <div className="relative z-10 space-y-6">
+                 <h2 className="text-5xl font-black font-quantum uppercase tracking-tighter">The Integrity <span className="text-indigo-400">Mesh</span></h2>
+                 <p className="text-xl text-zinc-400 font-medium max-w-xl mx-auto leading-relaxed italic">
+                   "Forensic Intelligence on Global Identity Fraud & Neural Scrutiny."
+                 </p>
+                 <div className="pt-8">
+                    <button 
+                      onClick={() => window.open('https://www.linkedin.com/newsletters/YOUR_NEWSLETTER_ID', '_blank')}
+                      className="px-10 py-5 bg-white text-zinc-900 font-black rounded-2xl flex items-center gap-3 mx-auto hover:bg-indigo-50 hover:text-white transition-all shadow-xl"
+                    >
+                       Subscribe on LinkedIn <ExternalLink size={20} />
+                    </button>
+                 </div>
+              </div>
+            </div>
+            <div className="p-10 bg-white border-4 border-zinc-100 rounded-[3rem] text-center">
+               <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">Institutional Knowledge Base • Issue #001 Deployed</p>
+            </div>
+          </div>
+        );
+
       case 'shared': return <ProofPortal record={selectedRecord || records[0]} onClose={() => { setActiveView('bgv-vault'); window.location.hash = ''; }} />;
       case 'settings': return (
         <div className={`p-10 rounded-[3rem] border shadow-sm animate-in fade-in duration-500 ${theme === 'onyx' ? 'bg-zinc-900 border-white/5' : 'bg-white border-emerald-50'}`}>
@@ -271,7 +297,7 @@ const App: React.FC = () => {
           </div>
         </header>
 
-        {/* --- MAIN CONTENT SLUT --- */}
+        {/* --- MAIN CONTENT SLOT --- */}
         <div className="p-10 lg:p-16 max-w-7xl mx-auto w-full flex-1 print:p-0 print:max-w-none">
           {renderContent()}
         </div>

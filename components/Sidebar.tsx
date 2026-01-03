@@ -4,7 +4,8 @@ import {
   FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
   ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
   MessageSquare, Activity, TrendingUp, ChevronRight,
-  Rocket, Crown
+  Rocket, Crown,
+  FileText
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
@@ -48,6 +49,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     { id: 'updates', label: 'Update Feed', icon: Bell, badge: 'NEW', category: 'System' },
     { id: 'contact-us', label: 'Forensic Support', icon: MessageSquare, badge: '24/7', category: 'System' },
     { id: 'strategic-blueprint', label: 'Future Blueprint', icon: Rocket, badge: 'VISION', category: 'System' },
+      // Optional: Add to navItems in Sidebar.tsx
+{ id: 'newsletter', label: 'Integrity Mesh', icon: FileText, badge: 'INTEL', category: 'System' },
   ];
 
   // Filter logic for the search bar
