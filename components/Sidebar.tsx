@@ -4,18 +4,32 @@ import {
   FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
   ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
   MessageSquare, Activity, TrendingUp, ChevronRight,
-  Rocket, Crown, FileText
+  Rocket, Crown, FileText, X
 } from 'lucide-react';
 import { VeritrustTheme } from '../App';
 
+/**
+ * SidebarProps Interface
+ * @param isOpen - Mobile state to control drawer visibility
+ * @param onClose - Function to close the drawer on mobile after selection
+ */
 interface SidebarProps {
   activeView: string;
   setActiveView: (id: string) => void;
   currentTheme: VeritrustTheme;
   onThemeChange: (theme: VeritrustTheme) => void;
+  isOpen?: boolean;    // 📱 Added for Mobile Logic
+  onClose?: () => void; // 📱 Added for Mobile Logic
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentTheme, onThemeChange }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  activeView, 
+  setActiveView, 
+  currentTheme, 
+  onThemeChange,
+  isOpen,
+  onClose 
+}) => {
   const [searchQuery, setSearchQuery] = useState('');
 
   // 🛡️ THE COMPLETE VERITRUSTX NAVIGATION MESH
@@ -51,13 +65,21 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
     { id: 'newsletter', label: 'Integrity Mesh', icon: FileText, badge: 'INTEL', category: 'System' },
   ];
 
+  // Filter logic for the search bar
   const filteredItems = navItems.filter(item => 
     item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  /**
+   * NavButton Component
+   * Internal helper for consistent button styling
+   */
   const NavButton = ({ id, label, icon: Icon, badge }: any) => (
     <button
-      onClick={() => setActiveView(id)}
+      onClick={() => {
+        setActiveView(id);
+        if (onClose) onClose(); // 📱 Close drawer on mobile selection
+      }}
       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
         activeView === id 
         ? `accent-bg text-white font-bold shadow-lg scale-[1.02]`
@@ -84,23 +106,34 @@ const Sidebar: React.FC<SidebarProps> = ({ activeView, setActiveView, currentThe
   );
 
   return (
-    <aside className={`w-64 border-r h-full flex flex-col fixed left-0 top-0 z-20 print:hidden transition-all duration-500 ${currentTheme === 'onyx' ? 'bg-zinc-950 border-white/5' : 'bg-white border-emerald-50 shadow-sm'}`}>
+    <aside className={`w-64 h-full border-r flex flex-col transition-all duration-500 shadow-2xl lg:shadow-none overflow-y-auto custom-scrollbar ${currentTheme === 'onyx' ? 'bg-zinc-950 border-white/5' : 'bg-white border-emerald-50'}`}>
       
       {/* 🛡️ BRAND SECTION - ACTIVE LOGO BUTTON */}
-      <button 
-        onClick={() => setActiveView('home')}
-        className={`w-full p-8 flex items-center gap-3 border-b text-left transition-all group ${
-          currentTheme === 'onyx' ? 'border-white/5 hover:bg-white/5' : 'border-emerald-50 hover:bg-emerald-50/50'
-        }`}
-      >
-        <div className="w-10 h-10 accent-bg rounded-xl flex items-center justify-center shadow-lg text-white shrink-0 group-hover:scale-110 transition-transform">
-          <Fingerprint size={22} />
-        </div>
-        <div>
-           <h1 className={`text-lg font-black tracking-tighter leading-none font-quantum ${currentTheme === 'onyx' ? 'text-white' : 'text-zinc-900'}`}>VeritrustX</h1>
-           <p className="text-[10px] font-black accent-text uppercase tracking-widest mt-1 italic">Identity Firewall</p>
-        </div>
-      </button>
+      <div className={`relative flex items-center justify-between border-b ${currentTheme === 'onyx' ? 'border-white/5' : 'border-emerald-50'}`}>
+        <button 
+          onClick={() => {
+            setActiveView('home');
+            if (onClose) onClose();
+          }}
+          className={`flex-1 p-8 flex items-center gap-3 text-left transition-all group`}
+        >
+          <div className="w-10 h-10 accent-bg rounded-xl flex items-center justify-center shadow-lg text-white shrink-0 group-hover:scale-110 transition-transform">
+            <Fingerprint size={22} />
+          </div>
+          <div>
+             <h1 className={`text-lg font-black tracking-tighter leading-none font-quantum ${currentTheme === 'onyx' ? 'text-white' : 'text-zinc-900'}`}>VeritrustX</h1>
+             <p className="text-[10px] font-black accent-text uppercase tracking-widest mt-1 italic">Identity Firewall</p>
+          </div>
+        </button>
+
+        {/* 📱 MOBILE CLOSE BUTTON */}
+        <button 
+          onClick={onClose}
+          className="lg:hidden p-4 mr-2 text-zinc-400 hover:text-zinc-900 transition-colors"
+        >
+          <X size={20} />
+        </button>
+      </div>
 
       {/* 🔍 SEARCH TOOL */}
       <div className={`px-4 py-4 border-b ${currentTheme === 'onyx' ? 'border-white/5' : 'border-emerald-50'}`}>

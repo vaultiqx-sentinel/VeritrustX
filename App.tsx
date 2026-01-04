@@ -43,11 +43,10 @@ export interface VaultRecord {
 const App: React.FC = () => {
   // --- Global State Management ---
   const [activeView, setActiveView] = useState<string>('home');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // 📱 MOBILE STATE
   const [globalSearch, setGlobalSearch] = useState('');
   const [protocolName, setProtocolName] = useState(localStorage.getItem('veritrustx-name') || 'VERITRUSTX');
   const [isHibernation, setIsHibernation] = useState(localStorage.getItem('is-hibernation') === 'true');
-  const [showKeyWarning, setShowKeyWarning] = useState(false);
   const [theme, setTheme] = useState<VeritrustTheme>((localStorage.getItem('veritrust-theme') as VeritrustTheme) || 'emerald');
   const [selectedRecord, setSelectedRecord] = useState<VaultRecord | null>(null);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -75,11 +74,7 @@ const App: React.FC = () => {
   const addSystemEvent = useCallback((title: string, message: string, type: 'info' | 'warning' | 'critical' | 'success') => {
     const newEvent = { id: Date.now(), title, message, type, time: 'Just now' };
     setNotifications(prev => [newEvent, ...prev].slice(0, 10));
-    setActivityLog(prev => [{ 
-        icon: type === 'critical' ? ShieldAlert : CheckCircle2, 
-        text: title, 
-        time: "0m" 
-    }, ...prev].slice(0, 5));
+    setActivityLog(prev => [{ icon: type === 'critical' ? ShieldAlert : CheckCircle2, text: title, time: "0m" }, ...prev].slice(0, 5));
   }, []);
 
   const addAuditRecord = useCallback((name: string, role: string, score: number, verdict: string) => {
@@ -99,7 +94,6 @@ const App: React.FC = () => {
     localStorage.setItem('veritrust-theme', newTheme);
   };
 
-  // --- Proof Portal Deep Linking ---
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
@@ -148,7 +142,7 @@ const App: React.FC = () => {
               <div className="absolute top-0 right-0 p-10 opacity-10"><FileText size={160} /></div>
               <div className="relative z-10 space-y-6">
                  <h2 className="text-4xl lg:text-6xl font-black font-quantum uppercase tracking-tighter">The Integrity <span className="text-indigo-400">Mesh</span></h2>
-                 <p className="text-lg lg:text-xl text-zinc-400 font-medium max-w-xl mx-auto leading-relaxed italic">"Forensic Intelligence on Global Identity Fraud & Neural Scrutiny."</p>
+                 <p className="text-xl text-zinc-400 font-medium max-w-xl mx-auto leading-relaxed italic">"Forensic Intelligence on Global Identity Fraud & Neural Scrutiny."</p>
                  <div className="pt-8">
                     <button 
                       onClick={() => window.open('https://www.linkedin.com/newsletters/7212450534571933696/', '_blank')}
@@ -158,9 +152,6 @@ const App: React.FC = () => {
                     </button>
                  </div>
               </div>
-            </div>
-            <div className="p-10 bg-white border-4 border-zinc-100 rounded-[3rem] text-center">
-               <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">Institutional Knowledge Base • Issue #001 Deployed</p>
             </div>
           </div>
         );
@@ -194,12 +185,6 @@ const App: React.FC = () => {
                  </div>
               </div>
             </div>
-            <div className={`p-10 rounded-[3rem] flex flex-col justify-center border ${theme === 'onyx' ? 'bg-zinc-950/50 border-white/10' : 'bg-emerald-50/40 border-emerald-100'}`}>
-               <Info className="accent-text mb-6" size={32} />
-               <p className="text-sm leading-relaxed font-medium text-zinc-500">
-                  VeritrustX is currently calibrated to the <span className="accent-text font-black">{theme.toUpperCase()}</span> spectrum. Every forensic audit is metadata-tagged and non-repudiable.
-               </p>
-            </div>
           </div>
         </div>
       );
@@ -210,7 +195,7 @@ const App: React.FC = () => {
   return (
     <div className={`min-h-screen flex selection:bg-emerald-500/30 font-sans relative theme-${theme} overflow-x-hidden`}>
       
-      {/* 📱 MOBILE SIDEBAR OVERLAY */}
+      {/* 📱 MOBILE SIDEBAR OVERLAY: Prevents clicking content when menu is open */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[70] lg:hidden animate-in fade-in duration-300"
@@ -228,7 +213,7 @@ const App: React.FC = () => {
         />
       </div>
 
-      {/* 🚀 MAIN CONTENT CONTAINER */}
+      {/* 🚀 MAIN CONTENT CONTAINER: Uses Dynamic Margins */}
       <main className="flex-1 lg:ml-64 min-h-screen flex flex-col relative z-10 print:ml-0">
         
         {/* --- GLOBAL STICKY HEADER --- */}
@@ -236,7 +221,7 @@ const App: React.FC = () => {
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             
             <div className="flex items-center gap-4">
-              {/* 📱 BURGER MENU BUTTON */}
+              {/* 📱 MOBILE BURGER MENU BUTTON */}
               <button 
                 onClick={() => setIsSidebarOpen(true)}
                 className="p-2 -ml-2 text-zinc-600 hover:bg-zinc-100 rounded-xl lg:hidden transition-all"
@@ -244,7 +229,6 @@ const App: React.FC = () => {
                 <Menu size={24} />
               </button>
 
-              {/* 🟢 ACTIVE HEADER LOGO (AS REQUESTED) */}
               <button 
                 onClick={() => setActiveView('home')}
                 className="flex items-center gap-3 group hover:opacity-80 transition-all"
@@ -325,7 +309,7 @@ const App: React.FC = () => {
         </header>
 
         {/* --- MAIN CONTENT SLOT --- */}
-        <div className="p-6 lg:p-16 max-w-7xl mx-auto w-full flex-1">
+        <div className="p-4 lg:p-16 max-w-7xl mx-auto w-full flex-1">
           {renderContent()}
         </div>
 

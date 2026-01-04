@@ -7,7 +7,7 @@ import {
   X, Activity, FileText, AlertTriangle, Scale, Handshake
 } from 'lucide-react';
 
-// 🟢 PROPS INTERFACE
+// 🟢 FIX: Define the interface to accept the onAction prop
 interface StrategicBlueprintProps {
   onAction?: (view: string) => void;
 }
@@ -15,63 +15,41 @@ interface StrategicBlueprintProps {
 const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => {
   const [showPDF, setShowPDF] = useState(false);
 
-  // 🏛️ STAGE 1 & 2: THE OPERATIONAL CORE
   const completedStages = [
     {
       stage: "Stage 01",
       title: "Neural Logic Core",
-      status: "OPERATIONAL",
-      readiness: 100,
-      desc: "Core reasoning engine for professional narrative fracture detection.",
-      items: [
-        "4000-Point Logic Pattern Match",
-        "Gemini 1.5 Pro Neural Uplink",
-        "Non-Repudiable Hashing",
-        "Institutional Audit Ledger"
-      ]
+      status: "STABLE",
+      items: ["4000-Point Logic Pattern Match", "Gemini 1.5 Pro Neural Uplink", "Immutable Audit Ledger"],
+      color: "text-emerald-600",
+      bg: "bg-emerald-50"
     },
     {
       stage: "Stage 02",
       title: "Forensic Mesh",
       status: "LIVE",
-      readiness: 100,
-      desc: "High-fidelity visual and biometric verification layers.",
-      items: [
-        "Digital DNA Pixel Scrutiny",
-        "Vocal Harmonic Continuity",
-        "Lip-Sync Latency Monitor",
-        "Proxy Guard Sentinel"
-      ]
+      items: ["Digital DNA Pixel-Level Scrutiny", "Biometric Identity Continuity", "Proxy Guard Surveillance"],
+      color: "text-emerald-600",
+      bg: "bg-emerald-50"
     }
   ];
 
-  // 🚀 STAGE 3 & 4: THE ECOSYSTEM EXPANSION
   const futureStages = [
     {
       stage: "Stage 03",
       title: "Strategic Scaling",
-      status: "SCALING",
-      readiness: 45,
-      desc: "Integrating protocol into global corporate infrastructure.",
-      items: [
-        "Global API Mesh (LinkedIn/ATS)",
-        "VX Browser Extension",
-        "Automated Governance Hub",
-        "Bulk Forensic Processing"
-      ]
+      status: "EXPANDING",
+      items: ["Global API Gateway (LinkedIn/ATS)", "VX Browser Extension for Live Calls", "Automated Compliance Hub"],
+      color: "text-indigo-600",
+      bg: "bg-indigo-50"
     },
     {
       stage: "Stage 04",
-      title: "Trust Infrastructure",
+      title: "Identity Infrastructure",
       status: "VISION",
-      readiness: 10,
-      desc: "Universal standards for decentralized professional truth.",
-      items: [
-        "Soulbound Trust Passport",
-        "Global Fraud Heatmap",
-        "Neural Schema Evolution",
-        "Quantum-Safe Migration"
-      ]
+      items: ["Web3 Trust Passport (Soulbound)", "Global Fraud Threat Heatmap", "Autonomous Schema Evolution"],
+      color: "text-indigo-600",
+      bg: "bg-indigo-50"
     }
   ];
 
@@ -79,64 +57,56 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
 
   if (showPDF) {
     return (
-      /* 📄 THE MASTER BRIEFING PDF - PIXEL PERFECT A4 */
-      <div className="min-h-screen bg-slate-50 p-4 md:p-10 animate-in fade-in duration-500 print:p-0">
+      <div className="space-y-10 animate-in fade-in duration-500 pb-20 print:p-0">
         <style>{`
           @media print {
             @page { size: A4; margin: 0; }
             body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .print-color { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            .pdf-page { border: none !important; box-shadow: none !important; border-radius: 0 !important; width: 100% !important; margin: 0 !important; padding: 15mm !important; }
           }
-          .neural-grid-bg { background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px); background-size: 20px 20px; }
         `}</style>
-
-        <div className="max-w-5xl mx-auto flex justify-between items-center mb-8 print:hidden">
-          <button onClick={() => setShowPDF(false)} className="flex items-center gap-2 text-zinc-500 hover:text-zinc-900 font-bold uppercase text-[10px] tracking-widest">
+        
+        <div className="flex justify-between items-center print:hidden">
+          <button onClick={() => setShowPDF(false)} className="flex items-center gap-2 text-zinc-400 hover:text-zinc-900 font-black uppercase text-[10px] tracking-widest transition-all">
             <ArrowLeft size={16} /> Return to Dashboard
           </button>
-          <button onClick={handlePrint} className="px-10 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center gap-3 hover:bg-emerald-600 shadow-2xl">
-            <Printer size={20} /> Export Master PDF
+          <button onClick={handlePrint} className="px-10 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-2xl">
+            <Printer size={20} /> Export Institutional PDF
           </button>
         </div>
 
-        <div className="pdf-page bg-white text-zinc-900 p-16 md:p-20 rounded-[4rem] shadow-2xl max-w-5xl mx-auto border-[1px] border-zinc-100 relative overflow-hidden neural-grid-bg print-color">
-          
-          {/* HEADER */}
-          <div className="flex justify-between items-start border-b-8 border-zinc-900 pb-12 relative z-10 print-color">
+        <div className="bg-white text-zinc-900 p-12 md:p-20 rounded-[4rem] shadow-2xl max-w-5xl mx-auto border-[12px] border-zinc-50 print:border-none print:shadow-none print:p-8 print-color">
+          <div className="flex justify-between items-start border-b-4 border-zinc-900 pb-12 print-color">
             <div className="space-y-4">
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3">
                  <div className="p-3 bg-zinc-900 rounded-xl text-white shadow-lg print-color"><ShieldCheck size={32} /></div>
                  <h1 className="text-4xl font-black tracking-tighter uppercase font-quantum">VeriTrustX</h1>
               </div>
               <p className="text-[12px] font-black uppercase tracking-[0.4em] text-zinc-400 italic">Institutional Strategy & Release Roadmap</p>
             </div>
             <div className="text-right">
-               <div className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest inline-block print-color">Core Mesh: STABLE</div>
-               <p className="text-xs font-bold text-zinc-400 mt-2">v1.18 • Jan 2026</p>
+               <div className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest inline-block print-color">Core Protocol: STABLE</div>
+               <p className="text-xs font-bold text-zinc-400 mt-2 uppercase">v1.18 • Jan 2026</p>
             </div>
           </div>
 
-          {/* MANIFESTO */}
-          <div className="py-12 relative z-10 border-b-2 border-zinc-100">
-             <h3 className="text-4xl font-black text-zinc-900 leading-tight">
-                "We have moved trust from human opinion into <span className="text-emerald-600">Immutable Neural Logic</span>. 2026 is the year merit becomes code."
-             </h3>
-             <p className="text-md text-zinc-500 mt-6 leading-relaxed font-medium">
-                Stages 1 and 2 are fully operational. VeriTrustX is currently grounding identities for high-stakes organizations globally. We are now scaling the infrastructure.
+          <div className="py-12 border-b-2 border-zinc-100">
+             <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 mb-4">Founder's Proclamation</h3>
+             <p className="text-2xl font-black text-zinc-900 leading-tight">
+                "We have successfully moved trust from human opinion into immutable forensic logic. Stages 1 and 2 are fully operational. We are now scaling the global mesh."
              </p>
           </div>
 
-          {/* STAGES 1 & 2 */}
-          <div className="py-10 relative z-10">
-             <h4 className="text-xl font-black uppercase tracking-tight text-zinc-900 mb-8 flex items-center gap-2">
-                <CheckCircle2 size={20} className="text-emerald-600" /> Operational foundation (Stages 1-2)
-             </h4>
+          <div className="py-10">
+             <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-emerald-600 text-white rounded-lg print-color"><CheckCircle2 size={20} /></div>
+                <h4 className="text-2xl font-black uppercase tracking-tight text-zinc-900">Deployed Foundation: Stages 1 & 2</h4>
+             </div>
              <div className="grid grid-cols-2 gap-8">
                 {completedStages.map((s, i) => (
                   <div key={i} className="p-8 bg-emerald-50 border-2 border-emerald-100 rounded-[2.5rem] print-color">
-                     <p className="text-[9px] font-black text-emerald-600 uppercase mb-2">{s.stage} • {s.status}</p>
+                     <p className="text-[10px] font-black text-emerald-600 mb-2">{s.stage} • {s.status}</p>
                      <h5 className="font-black text-zinc-900 text-lg mb-4">{s.title}</h5>
                      <ul className="space-y-2">
                         {s.items.map((item, idx) => (
@@ -150,15 +120,15 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
              </div>
           </div>
 
-          {/* STAGES 3 & 4 */}
-          <div className="py-10 relative z-10">
-             <h4 className="text-xl font-black uppercase tracking-tight text-zinc-900 mb-8 flex items-center gap-2">
-                <Rocket size={20} className="text-indigo-600" /> Ecosystem Expansion (Stages 3-4)
-             </h4>
+          <div className="py-10">
+             <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-indigo-600 text-white rounded-lg print-color"><Rocket size={20} /></div>
+                <h4 className="text-2xl font-black uppercase tracking-tight text-zinc-900">Expansion Mesh: Stages 3 & 4</h4>
+             </div>
              <div className="grid grid-cols-2 gap-8">
                 {futureStages.map((s, i) => (
                   <div key={i} className="p-8 bg-indigo-50 border-2 border-indigo-100 rounded-[2.5rem] print-color">
-                     <p className="text-[9px] font-black text-indigo-600 uppercase mb-2">{s.stage} • {s.status}</p>
+                     <p className="text-[10px] font-black text-indigo-600 mb-2">{s.stage} • {s.status}</p>
                      <h5 className="font-black text-zinc-900 text-lg mb-4">{s.title}</h5>
                      <ul className="space-y-2">
                         {s.items.map((item, idx) => (
@@ -172,12 +142,11 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
              </div>
           </div>
 
-          {/* SIGNATURE */}
-          <div className="mt-20 pt-12 border-t-4 border-zinc-900 flex justify-between items-end relative z-10 print-color">
-             <div className="space-y-4">
+          <div className="mt-24 pt-12 border-t-4 border-zinc-900 flex justify-between items-end print-color">
+             <div className="space-y-4 text-left">
                 <p className="text-sm font-black text-indigo-700">veritrustx.protocol@gmail.com</p>
                 <p className="text-[9px] font-bold text-zinc-400 uppercase leading-relaxed max-w-xs italic">
-                   © 2026 VeriTrustX Protocol. All intellectual property, logic weights, and forensic schemas are the property of Challa Aditya.
+                   © 2026 VeriTrustX Protocol. All intellectual property, logic schemas, and neural weights are the property of Challa Aditya.
                 </p>
              </div>
              <div className="text-right">
@@ -190,8 +159,8 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
                    </p>
                    <div className="h-0.5 w-72 bg-zinc-900 ml-auto mt-[-5px]"></div>
                 </div>
-                <p className="text-sm font-black text-zinc-900 uppercase">Challa Aditya</p>
-                <p className="text-[9px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & Chief Executive Officer</p>
+                <p className="text-sm font-black text-zinc-900 uppercase tracking-tighter">Challa Aditya</p>
+                <p className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest mt-1">Founder & Chief Executive Officer</p>
              </div>
           </div>
         </div>
@@ -200,7 +169,6 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
   }
 
   return (
-    /* 🏗️ INTERACTIVE DASHBOARD VIEW */
     <div className="space-y-12 animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col lg:flex-row justify-between items-start gap-10 border-b border-zinc-100 pb-12">
         <div className="max-w-3xl space-y-6">
@@ -211,32 +179,25 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
            <h2 className="text-6xl font-black text-zinc-900 tracking-tighter leading-[1.1] font-quantum uppercase">
               Strategic <br /> <span className="text-emerald-600">Blueprint.</span>
            </h2>
-           <p className="text-xl text-zinc-500 font-medium leading-relaxed italic border-l-8 border-emerald-500 pl-8">
-              "Mapping the transition from <strong>Institutional Foundation</strong> to <strong>Global Identity Infrastructure</strong>."
-           </p>
         </div>
         <div className="flex flex-col gap-4">
            <button onClick={() => setShowPDF(true)} className="px-10 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center gap-3 hover:bg-emerald-600 transition-all shadow-2xl scale-105 active:scale-95">
               <Download size={20} /> Download Master 4-Stage PDF
            </button>
-           <p className="text-center text-[9px] font-black text-zinc-400 uppercase tracking-[0.4em]">Authorized Session Level 10</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
          <div className="bg-white border-4 border-zinc-100 rounded-[4rem] p-12 space-y-8 shadow-sm group">
-            <h4 className="text-xl font-black text-zinc-900 flex items-center gap-3 font-quantum uppercase tracking-widest"><CheckCircle2 className="text-emerald-500" /> Operational Foundation</h4>
+            <h4 className="text-xl font-black text-zinc-900 flex items-center gap-3 font-quantum uppercase tracking-widest"><CheckCircle2 className="text-emerald-500" /> Operational Core</h4>
             <div className="space-y-10">
                {completedStages.map((s, i) => (
                  <div key={i} className="space-y-3 group">
-                    <div className="flex justify-between items-center">
-                       <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">{s.stage} • {s.status}</p>
-                       <span className="text-[9px] font-black text-zinc-300">READINESS: 100%</span>
-                    </div>
+                    <p className="text-[9px] font-black text-emerald-600 uppercase tracking-widest">{s.stage} • {s.status}</p>
                     <h5 className="font-black text-zinc-900 text-xl uppercase group-hover:text-emerald-600 transition-colors">{s.title}</h5>
                     <div className="grid grid-cols-1 gap-2">
                        {s.items.map((item, idx) => (
-                         <div key={idx} className="flex items-center gap-2 text-xs font-bold text-zinc-400"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> {item}</div>
+                         <div key={idx} className="flex items-center gap-2 text-xs font-bold text-zinc-400"><div className="w-1.5 h-1.5 bg-zinc-200 rounded-full"></div> {item}</div>
                        ))}
                     </div>
                  </div>
@@ -249,10 +210,7 @@ const StrategicBlueprint: React.FC<StrategicBlueprintProps> = ({ onAction }) => 
             <div className="space-y-10">
                {futureStages.map((s, i) => (
                  <div key={i} className="space-y-3 group">
-                    <div className="flex justify-between items-center">
-                       <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">{s.stage} • {s.status}</p>
-                       <span className="text-[9px] font-black text-zinc-700">READINESS: {s.readiness}%</span>
-                    </div>
+                    <p className="text-[9px] font-black text-indigo-400 uppercase tracking-widest">{s.stage} • {s.status}</p>
                     <h5 className="font-black text-white text-xl uppercase group-hover:text-indigo-400 transition-colors">{s.title}</h5>
                     <div className="grid grid-cols-1 gap-2">
                        {s.items.map((item, idx) => (
