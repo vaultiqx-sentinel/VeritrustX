@@ -113,7 +113,7 @@ app.post('/api/forensic-analyze', async (req, res) => {
 });
 
 // --- 5. BGV VAULT: FETCH INSTITUTIONAL LEDGER ---
-// Serves the full 319-line BGVVault component
+// --- 5. BGV VAULT: FETCH INSTITUTIONAL LEDGER ---
 app.get('/api/records', async (req, res) => {
     try {
         const { data, error } = await supabase
@@ -127,7 +127,6 @@ app.get('/api/records', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-
 // --- 6. NEURAL AUDIT: MANUAL RESUME SCRUTINY ---
 app.post('/api/neural-audit', async (req, res) => {
     try {
