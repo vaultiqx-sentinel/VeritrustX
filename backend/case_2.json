@@ -1,0 +1,10 @@
+{
+  "ledger_id": "VTX-7741-BETA",
+  "status": "SECURED",
+  "candidate": "Security Architect (Fintech)",
+  "neural_mesh": {
+    "biometric_hash": "sha256:88v122...9a1z2",
+    "proxy_risk_score": "0.01%"
+  },
+  "verdict": "HIGH_INTEGRITY_CONFIRMED"
+}

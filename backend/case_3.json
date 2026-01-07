@@ -1,0 +1,10 @@
+{
+  "ledger_id": "VTX-0042-GAMMA",
+  "status": "TERMINATED",
+  "candidate": "Java Backend Engineer",
+  "neural_mesh": {
+    "biometric_hash": "MISMATCH_DETECTED",
+    "proxy_risk_score": "89.45%"
+  },
+  "verdict": "PROXY_INTERVIEW_DETECTED_COMMISSION_RISK"
+}

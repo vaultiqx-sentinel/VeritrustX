@@ -1,0 +1,10 @@
+{
+  "ledger_id": "VTX-9928-ALPHA",
+  "status": "GROUNDED",
+  "candidate": "Senior Full-Stack Lead",
+  "neural_mesh": {
+    "biometric_hash": "sha256:71c829...4f2e9",
+    "proxy_risk_score": "0.02%"
+  },
+  "verdict": "AUTHORIZED_FOR_PLACEMENT"
+}

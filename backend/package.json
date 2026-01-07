@@ -13,6 +13,8 @@
   "license": "ISC",
   "dependencies": {
     "@google/generative-ai": "^0.11.5",
+    "@mediapipe/camera_utils": "^0.3.1675466862",
+    "@mediapipe/face_mesh": "^0.4.1633559619",
     "@supabase/supabase-js": "^2.89.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
