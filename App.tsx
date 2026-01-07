@@ -24,8 +24,8 @@ import Home from './components/Home';
 import StrategicBlueprint from './components/StrategicBlueprint';
 
 import { 
-  Settings2, Search, Bell, Fingerprint, CheckCircle2, ShieldAlert, 
-  Cpu, MessageSquare, Clock, Activity, FileText, ExternalLink, Menu, Info
+  Settings2, Search, Bell, Fingerprint, Menu, Activity, Cpu, Clock, 
+  ShieldAlert, CheckCircle2, FileText, ExternalLink, MessageSquare, Info, X
 } from 'lucide-react';
 
 // --- TYPES & GLOBAL INTERFACES ---
@@ -60,26 +60,27 @@ const App: React.FC = () => {
 
   // --- Neural Logs & Alert Feed ---
   const [notifications, setNotifications] = useState([
-    { id: 1, title: 'System Boot', message: 'VeritrustX Neural Logic Core is online.', type: 'info', time: 'Just now' }
+    { id: 1, title: 'System Boot', message: 'VeritrustX Neural Logic Core is online.', type: 'info', time: 'Just now' },
+    { id: 2, title: 'Registry Link', message: 'Institutional Vault Shards synchronized.', type: 'success', time: '2m ago' }
   ]);
 
   const [activityLog, setActivityLog] = useState([
     { icon: Cpu, text: "Forensic mesh calibrated", time: "1m" },
-    { icon: Clock, text: "Institutional uplink active", time: "5m" }
+    { icon: Clock, text: "Institutional uplink active", time: "5m" },
+    { icon: Fingerprint, text: "Identity grounding online", time: "10m" }
   ]);
 
-  // --- 🟢 INSTITUTIONAL DATA FETCH (Real-time Sync) ---
+  // --- 🟢 INSTITUTIONAL DATA FETCH (Real-time Heart Sync) ---
   const fetchGlobalVault = useCallback(async () => {
     try {
-      // Use your Render URL for live or localhost:5000 for local testing
       const response = await fetch('https://veritrustx.onrender.com/api/records');
+      if (!response.ok) throw new Error("Connection Lost");
       const data = await response.json();
       
       const formatted = data.map((r: any) => ({
         id: r.id,
         name: r.name,
         role: r.role,
-        // Map DB GROUNDED/TERMINATED to UI Verified/Failed
         status: r.status === 'GROUNDED' || r.status === 'Verified' ? 'Verified' : r.status === 'TERMINATED' ? 'Failed' : 'Flagged',
         trustScore: r.trustScore,
         created_at: r.created_at,
@@ -96,6 +97,9 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchGlobalVault();
+    // Auto-refresh every 60 seconds to keep the mesh alive
+    const interval = setInterval(fetchGlobalVault, 60000);
+    return () => clearInterval(interval);
   }, [fetchGlobalVault]);
 
   // --- Logic Handlers ---
@@ -109,10 +113,9 @@ const App: React.FC = () => {
     }, ...prev].slice(0, 5));
   }, []);
 
-  // Updated callback for ProxyGuard and ForensicLab to trigger re-fetch
   const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string) => {
-    addSystemEvent('New Audit Anchored', `Identity grounding for ${name} verified in Vault.`, score > 50 ? 'success' : 'critical');
-    fetchGlobalVault(); // Refresh Vault immediately after audit
+    addSystemEvent('New Audit Anchored', `Identity check for ${name} completed.`, score > 50 ? 'success' : 'critical');
+    fetchGlobalVault(); // Immediate sync
   }, [addSystemEvent, fetchGlobalVault]);
 
   const handleThemeChange = (newTheme: VeritrustTheme) => {
@@ -138,7 +141,7 @@ const App: React.FC = () => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [records]);
 
-  // --- Neural Router: Handling all views ---
+  // --- Neural Router: Handling all 23 views ---
   const renderContent = () => {
     switch (activeView) {
       case 'home': return <Home onEnter={() => setActiveView('dashboard')} onContact={() => setActiveView('contact-us')} />;
@@ -146,20 +149,31 @@ const App: React.FC = () => {
       case 'dashboard': return <Dashboard isHibernation={isHibernation} records={records} />;
       case 'erp-architect': return <ERPArchitect onLogicDeploy={(d) => addSystemEvent('Logic Mutation', d, 'info')} />;
       
-      // ✅ BGV Vault with Search & Prop Sync
       case 'bgv-vault': 
         return (
           <BGVVault 
             searchFilter={globalSearch} 
             records={records} 
-            onShareRecord={(r: VaultRecord) => { setSelectedRecord(r); setActiveView('shared'); }} 
+            onShareRecord={(r: VaultRecord) => { 
+                setSelectedRecord(r); 
+                setActiveView('shared'); 
+            }} 
           />
         );
 
-      case 'audit-history': return <AuditHistory searchFilter={globalSearch} records={records} onViewRecord={(r: VaultRecord) => { setSelectedRecord(r); setActiveView('shared'); }} />;
+      case 'audit-history': 
+        return (
+          <AuditHistory 
+            searchFilter={globalSearch} 
+            records={records} 
+            onViewRecord={(r: VaultRecord) => { 
+                setSelectedRecord(r); 
+                setActiveView('shared'); 
+            }} 
+          />
+        );
+
       case 'integrity-scan': return <IntegrityScanner onAuditComplete={handleAuditCompletion} />;
-      
-      // ✅ Proxy Guard connected to Backend Sync
       case 'proxy-guard': return <ProxyGuard onFraudDetected={handleAuditCompletion} />;
       case 'forensic-lab': return <ForensicLab onVerdict={handleAuditCompletion} />;
       
@@ -194,13 +208,19 @@ const App: React.FC = () => {
                  </div>
               </div>
             </div>
+            <div className="p-10 bg-white border-4 border-zinc-100 rounded-[3rem] text-center">
+               <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">Institutional Knowledge Base • Issue #001 Deployed</p>
+            </div>
           </div>
         );
+
       case 'shared': return <ProofPortal record={selectedRecord || records[0]} onClose={() => { setActiveView('bgv-vault'); window.location.hash = ''; }} />;
+      
       case 'settings': return (
         <div className={`p-10 rounded-[3rem] border shadow-sm animate-in fade-in duration-500 ${theme === 'onyx' ? 'bg-zinc-900 border-white/5' : 'bg-white border-emerald-50'}`}>
-          <h2 className="text-3xl font-black mb-10 font-quantum dark:text-white text-zinc-900">System Configuration</h2>
-          <div className="space-y-6">
+          <h2 className="text-3xl font-black mb-10 font-quantum dark:text-white text-zinc-900 uppercase">System Configuration</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div className="space-y-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest ml-1 accent-text">Protocol Display Name</label>
                 <input 
@@ -224,6 +244,13 @@ const App: React.FC = () => {
                     </button>
                  </div>
               </div>
+            </div>
+            <div className={`p-10 rounded-[3rem] flex flex-col justify-center border ${theme === 'onyx' ? 'bg-zinc-950/50 border-white/10' : 'bg-emerald-50/40 border-emerald-100'}`}>
+               <Info className="accent-text mb-6" size={32} />
+               <p className="text-sm leading-relaxed font-medium text-zinc-500">
+                  VeritrustX is calibrated to the <span className="accent-text font-black">{theme.toUpperCase()}</span> spectrum. Every forensic audit is metadata-tagged and non-repudiable.
+               </p>
+            </div>
           </div>
         </div>
       );
@@ -238,7 +265,7 @@ const App: React.FC = () => {
       {isSidebarOpen && <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[70] lg:hidden" onClick={() => setIsSidebarOpen(false)}></div>}
 
       {/* SIDEBAR DRAWER */}
-      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-[80] lg:z-20`}>
+      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 z-[80] lg:z-20`}>
         <Sidebar activeView={activeView} setActiveView={(v) => { setActiveView(v); setIsSidebarOpen(false); }} currentTheme={theme} onThemeChange={handleThemeChange} />
       </div>
 
@@ -247,8 +274,9 @@ const App: React.FC = () => {
         {/* --- GLOBAL STICKY HEADER --- */}
         <header className="sticky top-0 z-[60] glass-panel border-b px-6 lg:px-10 py-5 print:hidden bg-white/80 backdrop-blur-md">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
+            
             <div className="flex items-center gap-4">
-              <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-zinc-600 lg:hidden"><Menu size={24} /></button>
+              <button onClick={() => setIsSidebarOpen(true)} className="p-2 text-zinc-600 lg:hidden rounded-xl hover:bg-zinc-100"><Menu size={24} /></button>
               <button onClick={() => setActiveView('home')} className="flex items-center gap-3 group">
                 <div className="p-2 accent-bg rounded-lg shadow-lg text-white group-hover:rotate-12 transition-transform">
                   <Fingerprint size={18} />
@@ -268,7 +296,7 @@ const App: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4 lg:gap-8">
+            <div className="flex items-center gap-4">
               <div className="relative">
                 <button onClick={() => setIsNotificationsOpen(!isNotificationsOpen)} className={`p-2 transition-all rounded-xl ${isNotificationsOpen ? 'accent-bg text-white' : 'text-zinc-400 hover:accent-text'}`}>
                   <Bell size={22} />
@@ -291,7 +319,7 @@ const App: React.FC = () => {
                                   </div>
                                   <div className="flex-1">
                                      <p className="text-xs font-black text-zinc-900">{n.title}</p>
-                                     <p className="text-[11px] text-zinc-500 mt-1">{n.message}</p>
+                                     <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{n.message}</p>
                                   </div>
                                </div>
                             </div>
@@ -301,7 +329,7 @@ const App: React.FC = () => {
                   </>
                 )}
               </div>
-              <button onClick={() => setActiveView('settings')} className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100 text-emerald-700">
+              <button onClick={() => setActiveView('settings')} className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black uppercase border border-emerald-100 text-emerald-700">
                 <Settings2 size={16} /> Config
               </button>
             </div>
@@ -315,7 +343,7 @@ const App: React.FC = () => {
 
         {/* GLOBAL ACTIVITY LEDGER WIDGET */}
         <div className="fixed bottom-10 right-10 z-50 print:hidden hidden sm:block">
-           <div className={`text-white rounded-[2rem] shadow-2xl p-6 w-80 border relative overflow-hidden ${theme === 'onyx' ? 'bg-zinc-900 border-white/10' : 'bg-zinc-950 border-white/5'}`}>
+           <div className={`text-white rounded-[2rem] shadow-2xl p-6 w-80 border relative group hover:w-96 transition-all overflow-hidden ${theme === 'onyx' ? 'bg-zinc-900 border-white/10' : 'bg-zinc-950 border-white/5'}`}>
               <div className="flex items-center justify-between mb-4">
                  <div className="flex items-center gap-2">
                     <div className="w-2 h-2 accent-bg rounded-full animate-pulse"></div>
