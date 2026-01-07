@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { History, Download, Calendar, User, Clock, FileText, ArrowRight } from 'lucide-react';
+import { History, Download, Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { VaultRecord } from '../App';
 
 export interface AuditHistoryProps {
@@ -21,15 +21,15 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
     <div className="space-y-8 animate-in fade-in duration-700 pb-20">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <h2 className="text-4xl font-black text-zinc-900 tracking-tight mb-2 font-quantum">Audit <span className="accent-text">History</span></h2>
+          <h2 className="text-4xl font-black text-zinc-900 tracking-tight mb-2 font-quantum uppercase">Audit <span className="text-indigo-600">History</span></h2>
           <p className="text-zinc-500 font-medium italic">Live transactional record of all identity scrutinies processed via Neural Logic.</p>
         </div>
         <div className="flex gap-4">
           <div className="bg-white border border-zinc-100 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-sm">
-             <Clock size={16} className="accent-text" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Ledger Status: <span className="text-emerald-500">SYNCED</span></span>
+            <Clock size={16} className="text-indigo-600" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Ledger Status: <span className="text-emerald-500">SYNCED</span></span>
           </div>
-          <button className="p-3 bg-white border border-zinc-100 rounded-2xl text-zinc-400 hover:accent-text transition-all shadow-sm">
+          <button className="p-3 bg-white border border-zinc-100 rounded-2xl text-zinc-400 hover:text-indigo-600 transition-all shadow-sm">
             <Download size={18} />
           </button>
         </div>
@@ -51,12 +51,13 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
             <tbody className="divide-y divide-zinc-50">
               {filteredHistory.map((item) => (
                 <tr key={item.id} className="hover:bg-zinc-50 transition-colors group">
-                  <td className="px-10 py-6 text-xs font-mono font-bold accent-text">{item.id}</td>
+                  <td className="px-10 py-6 text-xs font-mono font-bold text-indigo-600">{item.id}</td>
                   <td className="px-10 py-6">
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl overflow-hidden border-2 flex items-center justify-center p-0.5 ${item.status === 'Verified' ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'}`}>
-                        {item.photo ? (
-                          <img src={item.photo} className="w-full h-full object-cover rounded-lg" alt={item.name} />
+                        {/* ✅ FIXED: Changed photo to photoUrl */}
+                        {item.photoUrl ? (
+                          <img src={item.photoUrl} className="w-full h-full object-cover rounded-lg" alt={item.name} />
                         ) : (
                           <User size={16} className="text-zinc-300" />
                         )}
@@ -70,7 +71,8 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
                   </td>
                   <td className="px-10 py-6 text-xs font-bold text-zinc-400 uppercase tracking-widest">
                     <div className="flex items-center gap-2">
-                      <Calendar size={12} className="opacity-50" /> {item.date}
+                      {/* ✅ FIXED: Changed date to created_at */}
+                      <Calendar size={12} className="opacity-50" /> {item.created_at}
                     </div>
                   </td>
                   <td className="px-10 py-6">
@@ -89,9 +91,9 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
                       </span>
                       <button 
                         onClick={() => onViewRecord?.(item)}
-                        className="text-[9px] font-black text-zinc-300 uppercase group-hover:accent-text transition-colors flex items-center gap-1"
+                        className="text-[9px] font-black text-zinc-300 uppercase group-hover:text-indigo-600 transition-colors flex items-center gap-1"
                       >
-                         View Dossier <ArrowRight size={10} />
+                        View Dossier <ArrowRight size={10} />
                       </button>
                     </div>
                   </td>
@@ -102,13 +104,13 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
         </div>
         {filteredHistory.length === 0 && (
           <div className="p-32 text-center space-y-6">
-             <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mx-auto border border-zinc-100">
-                <History size={32} className="text-zinc-200" />
-             </div>
-             <div className="max-w-xs mx-auto space-y-2">
-                <p className="text-zinc-900 font-black text-xl font-quantum">Archive Empty</p>
-                <p className="text-zinc-400 text-xs font-medium uppercase tracking-widest">No matching audit events found in the ledger.</p>
-             </div>
+            <div className="w-20 h-20 bg-zinc-50 rounded-full flex items-center justify-center mx-auto border border-zinc-100">
+              <History size={32} className="text-zinc-200" />
+            </div>
+            <div className="max-w-xs mx-auto space-y-2">
+              <p className="text-zinc-900 font-black text-xl font-quantum uppercase">Archive Empty</p>
+              <p className="text-zinc-400 text-xs font-medium uppercase tracking-widest">No matching audit events found in the ledger.</p>
+            </div>
           </div>
         )}
       </div>
