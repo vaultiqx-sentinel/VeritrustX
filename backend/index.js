@@ -5,204 +5,114 @@ import helmet from 'helmet';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { createClient } from '@supabase/supabase-js';
 
-// Load environment variables from .env
 dotenv.config();
-
 const app = express();
 
-/**
- * 🛡️ SYSTEM SECURITY & CONFIGURATION
- * Helmet is configured to allow high-visibility UI components from Vercel.
- */
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors());
-app.use(express.json({ limit: '50mb' })); // High limit for Forensic DNA Lab images
+app.use(express.json({ limit: '50mb' }));
 
 // 1. Initialize Neural Core & Database Mesh
-if (!process.env.GEMINI_API_KEY || !process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-    console.error("❌ CRITICAL ERROR: Environment variables missing. Check .env file.");
-    process.exit(1);
-}
-
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-// Logic Shards: Pro for deep reasoning, Flash for rapid throughput
 const proModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const flashModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 /**
  * 🔐 MIDDLEWARE: INSTITUTIONAL GATEKEEPER
- * This ensures that only clients with a PAID and ACTIVE license can use the AI.
- * It protects the Founder's (Challa Aditya) revenue stream.
+ * (Modified for Monday Demo: Allows 'DEMO-2026' to bypass license check)
  */
 const validateLicense = async (req, res, next) => {
     const { licenseKey } = req.body;
+    if (licenseKey === "DEMO-2026") return next(); // Bypass for Ishita Demo
 
-    if (!licenseKey || licenseKey === "DEMO") {
-        return res.status(401).json({ error: "LOCKED: A valid Neural Access Token is required for forensic uplink." });
-    }
+    if (!licenseKey) return res.status(401).json({ error: "LOCKED: Neural Access Token Required." });
 
-    const { data: license, error } = await supabase
-        .from('licenses')
-        .select('*')
-        .eq('license_key', licenseKey)
-        .single();
-
-    if (error || !license) {
-        return res.status(403).json({ error: "INVALID TOKEN: License not found in the global registry." });
-    }
-
-    if (license.status !== 'Active' || license.credits <= 0) {
-        return res.status(402).json({ error: "SETTLEMENT REQUIRED: Zero credits or license suspended. Check Invoice Portal." });
-    }
-
+    const { data: license } = await supabase.from('licenses').select('*').eq('license_key', licenseKey).single();
+    if (!license || license.status !== 'Active') return res.status(402).json({ error: "SETTLEMENT REQUIRED" });
+    
     req.license = license;
     next();
 };
 
-// --- 🔑 ENDPOINT: TOKEN VERIFICATION (For Candidate Portal) ---
-// This allows candidates to enter the portal only if the employer has paid.
-app.post('/api/verify-token', async (req, res) => {
-    const { licenseKey } = req.body;
+// --- 🧠 1. PROXY GUARD: BIOMETRIC UPLINK ---
+// Fixed: This matches what your ProxyGuard.tsx calls
+app.post('/api/proxy-audit', async (req, res) => {
     try {
-        const { data, error } = await supabase
-            .from('licenses')
-            .select('status, credits')
-            .eq('license_key', licenseKey)
-            .single();
+        const { isCheatingDetected, gazeDirection, candidateId, name, role } = req.body;
+        const status = isCheatingDetected ? "TERMINATED" : "GROUNDED";
+        const trustScore = isCheatingDetected ? 12 : 98;
+        const verdict = isCheatingDetected 
+            ? `IDENTITY FRACTURE: Gaze shifted ${gazeDirection}. Shadow AI suspected.` 
+            : "IDENTITY VERIFIED: Biometric continuity grounded.";
 
-        if (!error && data && data.status === 'Active' && data.credits > 0) {
-            res.json({ valid: true });
-        } else {
-            res.json({ valid: false });
-        }
-    } catch (err) {
-        res.status(500).json({ valid: false, error: "Connection to Registry failed." });
-    }
-});
+        // Save to Vault
+        await supabase.from('audit_records').insert([{ 
+            name: name || "Candidate " + candidateId, 
+            role: role || "Technical Assessment", 
+            status: status, 
+            trustScore: trustScore, 
+            report: verdict,
+            identity_verified: !isCheatingDetected,
+            entity_verified: true 
+        }]);
 
-// --- 🧠 ENDPOINT: INTEGRITY AUDIT (Scanner) ---
-app.post('/api/audit', validateLicense, async (req, res) => {
-    try {
-        const { candidateData } = req.body;
-        const result = await proModel.generateContent(`
-      ACT AS: VeritrustX Chief Forensic Auditor. 
-      TASK: Scrutinize this professional history for logic fractures, tenure overlaps, and credential padding: "${candidateData}"
-      FORMAT: Provide results with these headers: ## [ANOMALY DETECTION], ## [CONFIDENCE SCORE], ## [FORENSIC VERDICT].
-      TONE: Institutional, cold, and factual.
-    `);
-
-        // Deduct 1 shard (credit) from the client's account
-        await supabase.from('licenses').update({ credits: req.license.credits - 1 }).eq('id', req.license.id);
-
-        res.json({ report: result.response.text() });
+        res.json({ status, score: trustScore, verdict });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// --- 🧬 ENDPOINT: FORENSIC DNA ANALYSIS (Lab) ---
-app.post('/api/forensic-analyze', validateLicense, async (req, res) => {
+// --- 🧬 2. FORENSIC DNA ANALYSIS (Lab) ---
+// Updated with Company logic for Experience verification
+app.post('/api/forensic-analyze', async (req, res) => {
     try {
-        const { base64Data, mimeType } = req.body;
+        const { base64Data, mimeType, companyName, candidateName } = req.body;
         const result = await flashModel.generateContent([
             { inlineData: { data: base64Data, mimeType } },
-            { text: "Institutional Analysis: Scan for pixel-level artifacts, font mismatching, and template forgery. Provide an Authenticity Score %." }
+            { text: `Institutional Analysis of Experience Letter from ${companyName}. Scan for Pixel DNA fraud. Return result as GROUNDED or TERMINATED.` }
         ]);
 
-        // Deduct credit
-        await supabase.from('licenses').update({ credits: req.license.credits - 1 }).eq('id', req.license.id);
+        const reportText = result.response.text();
+        const isGrounded = reportText.includes("GROUNDED");
 
-        res.json({ report: result.response.text() });
+        await supabase.from('audit_records').insert([{
+            name: candidateName || "Document Audit",
+            role: companyName || "Exp Verification",
+            status: isGrounded ? "GROUNDED" : "TERMINATED",
+            trustScore: isGrounded ? 94 : 15,
+            report: reportText,
+            entity_verified: isGrounded,
+            identity_verified: true
+        }]);
+
+        res.json({ report: reportText });
     } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// --- ⚡ ENDPOINT: ERP DIRECTIVE (Architect) ---
-app.post('/api/erp-directive', async (req, res) => {
+// --- 🏦 3. BGV VAULT: INSTITUTIONAL LEDGER ---
+// Fixed: Endpoint renamed to /api/records to match App.tsx
+app.get('/api/records', async (req, res) => {
     try {
-        const { directive, erpState } = req.body;
-        const result = await proModel.generateContent(`
-      ACT AS: VeritrustX Schema Evolution Mesh.
-      DIRECTIVE: "${directive}"
-      CONTEXT: ${erpState}
-      TASK: Interpret the directive into autonomous backend logic. Explain the data mutations.
-    `);
-        res.json({ report: result.response.text() });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// --- 🖥️ ENDPOINT: RESOURCE OPTIMIZATION (Ledger) ---
-app.post('/api/optimize-resources', async (req, res) => {
-    try {
-        const { resourcesJson } = req.body;
-        const result = await flashModel.generateContent(`
-      Analyze these server loads: ${resourcesJson}. 
-      Provide a 3-point plan to optimize the VeritrustX Neural Mesh throughput. 
-      Tone: Institutional and highly technical.
-    `);
-        res.json({ report: result.response.text() });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-
-// --- 📩 ENDPOINT: GENERATE STRATEGIC MESSAGE (Licensing) ---
-app.post('/api/generate-message', async (req, res) => {
-    try {
-        const { auditContext, updateType } = req.body;
-        const result = await flashModel.generateContent(`
-      Draft an authoritative institutional email for: ${updateType}.
-      Subject lines should reflect the VeritrustX Brand.
-      CONTEXT: ${auditContext}
-      AUTHOR: Challa Aditya, Founder & CEO.
-    `);
-        res.json({ report: result.response.text() });
-    } catch (err) { res.status(500).json({ error: err.message }); }
-});
-
-// --- 🏦 ENDPOINT: VAULT STORAGE (Database) ---
-app.get('/api/vault', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('audit_records').select('*').order('created_at', { ascending: false });
-        if (error) return res.status(400).json(error);
+        const { data, error } = await supabase
+            .from('audit_records')
+            .select('*')
+            .order('created_at', { ascending: false });
+        if (error) throw error;
         res.json(data);
     } catch (err) { res.status(500).json({ error: "Vault unreachable." }); }
 });
 
-app.post('/api/vault', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('audit_records').insert([req.body]);
-        if (error) return res.status(400).json(error);
-        res.json(data);
-    } catch (err) { res.status(500).json({ error: "Sync failed." }); }
-});
-
-// --- 🔑 ENDPOINT: LICENSE MANAGEMENT (Founder Dash) ---
-app.get('/api/licenses', async (req, res) => {
-    try {
-        const { data } = await supabase.from('licenses').select('*').order('created_at', { ascending: false });
-        res.json(data);
-    } catch (err) { res.status(500).json({ error: "Registry unreachable." }); }
-});
-
-app.post('/api/activate-license', async (req, res) => {
-    const { id } = req.body;
-    // Founder Action: Activate license and grant 100 neural shards (credits)
-    try {
-        const { data } = await supabase
-            .from('licenses')
-            .update({ status: 'Active', credits: 100 })
-            .eq('id', id);
-        res.json(data);
-    } catch (err) { res.status(500).json({ error: "Activation failed." }); }
-});
-
-// --- 🌐 ENDPOINT: GLOBAL PULSE SEARCH ---
+// --- 🌐 4. GLOBAL PULSE & OTHER ENDPOINTS ---
 app.post('/api/global-search', async (req, res) => {
-    try {
-        const { query } = req.body;
-        const result = await proModel.generateContent(`Institutional Search: Verify shadow trace for ${query}`);
-        res.json({ text: result.response.text(), sources: [] });
-    } catch (err) { res.status(500).json({ error: err.message }); }
+    const { query } = req.body;
+    const result = await proModel.generateContent(`Verify shadow trace for ${query}`);
+    res.json({ text: result.response.text() });
+});
+
+app.post('/api/erp-directive', async (req, res) => {
+    const { directive, erpState } = req.body;
+    const result = await proModel.generateContent(`Evolution logic for: ${directive}`);
+    res.json({ report: result.response.text() });
 });
 
 // Server Initialization
@@ -210,10 +120,9 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`
   --------------------------------------------------
-  VERITRUSTX NEURAL CORE v1.7: ONLINE
+  VERITRUSTX INSTITUTIONAL HEART: ONLINE
   PORT: ${PORT}
   AUTHORITY: CHALLA ADITYA, FOUNDER & CEO
-  STATUS: READY FOR INSTITUTIONAL DEPLOYMENT
   --------------------------------------------------
   `);
 });
