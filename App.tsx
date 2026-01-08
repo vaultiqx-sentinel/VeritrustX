@@ -1,4 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
+
+// --- INSTITUTIONAL COMPONENT MESH ---
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import FounderAnalytics from './components/FounderAnalytics';
@@ -37,8 +41,8 @@ export interface VaultRecord {
   role: string;
   status: 'Verified' | 'Flagged' | 'Failed';
   trustScore: number;
-  created_at: string;       // Synced with Backend
-  photoUrl: string | null;  // Synced with Backend
+  created_at: string;       // Synced with Render Backend
+  photoUrl: string | null;  // Synced with Render Backend
   report?: string;          // Forensic analysis text
   entity_verified?: boolean; // Trinity of Trust: Company
   identity_verified?: boolean; // Trinity of Trust: Candidate
@@ -97,7 +101,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     fetchGlobalVault();
-    // Auto-refresh every 60 seconds to keep the mesh alive
     const interval = setInterval(fetchGlobalVault, 60000);
     return () => clearInterval(interval);
   }, [fetchGlobalVault]);
@@ -114,8 +117,8 @@ const App: React.FC = () => {
   }, []);
 
   const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string) => {
-    addSystemEvent('New Audit Anchored', `Identity check for ${name} completed.`, score > 50 ? 'success' : 'critical');
-    fetchGlobalVault(); // Immediate sync
+    addSystemEvent('New Audit Anchored', `Identity grounding for ${name} verified in Vault.`, score > 50 ? 'success' : 'critical');
+    fetchGlobalVault(); 
   }, [addSystemEvent, fetchGlobalVault]);
 
   const handleThemeChange = (newTheme: VeritrustTheme) => {
@@ -265,7 +268,7 @@ const App: React.FC = () => {
       {isSidebarOpen && <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[70] lg:hidden" onClick={() => setIsSidebarOpen(false)}></div>}
 
       {/* SIDEBAR DRAWER */}
-      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 z-[80] lg:z-20`}>
+      <div className={`fixed inset-y-0 left-0 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 ease-in-out z-[80] lg:z-20`}>
         <Sidebar activeView={activeView} setActiveView={(v) => { setActiveView(v); setIsSidebarOpen(false); }} currentTheme={theme} onThemeChange={handleThemeChange} />
       </div>
 
@@ -285,7 +288,6 @@ const App: React.FC = () => {
               </button>
             </div>
 
-            {/* Global Search Field */}
             <div className="hidden md:flex flex-1 max-w-xl px-10">
               <div className="relative group w-full">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:accent-text" size={16} />
@@ -362,6 +364,10 @@ const App: React.FC = () => {
               </div>
            </div>
         </div>
+
+        {/* 🟢 VERCEL OBSERVABILITY - REAL-TIME TRACKING */}
+        <Analytics />
+        <SpeedInsights />
       </main>
     </div>
   );
