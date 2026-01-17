@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { 
   ShieldCheck, Search, Fingerprint, ReceiptText, Key, Bell, 
   MessageSquare, Activity, Globe, Rocket, Crown, Cpu, Network, Scan, 
-  UserCheck, Map, Target, X
+  UserCheck, Map, Target, X, Scale
 } from 'lucide-react';
 import { VeritrustTheme } from '../types';
 
@@ -52,6 +53,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     
     // --- SYSTEM ---
     { id: 'updates', label: 'Protocol Updates', icon: Bell, badge: 'NEW', category: 'System' },
+    { id: 'legal-hub', label: 'Legal Infrastructure', icon: Scale, category: 'System' },
     { id: 'contact-us', label: 'Forensic Uplink', icon: MessageSquare, category: 'System' },
   ];
 

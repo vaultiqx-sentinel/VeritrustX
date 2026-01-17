@@ -41,7 +41,7 @@ const App: React.FC = () => {
   const [activeView, setActiveView] = useState<string>('home');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
-  const [protocolName, setProtocolName] = useState(localStorage.getItem('veritrustx-name') || 'VERITRUSTX');
+  const [protocolName, setProtocolName] = useState(localStorage.getItem('veritrustx-name') || 'VeriTrustX');
   const [isHibernation, setIsHibernation] = useState(localStorage.getItem('is-hibernation') === 'true');
   // UPDATED: Default to 'onyx' for high-end "Cyber" feel
   const [theme, setTheme] = useState<VeritrustTheme>((localStorage.getItem('veritrust-theme') as VeritrustTheme) || 'onyx');
@@ -113,7 +113,7 @@ const App: React.FC = () => {
     }, ...prev].slice(0, 5));
   }, []);
 
-  const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string, report: string) => {
+  const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string, report?: string) => {
     addSystemEvent('New Audit Anchored', `Identity grounding for ${name} verified in Vault.`, score > 50 ? 'success' : 'critical');
     fetchGlobalVault(); 
   }, [addSystemEvent, fetchGlobalVault]);
@@ -145,7 +145,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     switch (activeView) {
       // Core & Founder
-      case 'home': return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} />;
+      case 'home': return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} onLegal={() => setActiveView('legal-hub')} />;
       case 'ceo-command': return <FounderAnalytics />;
       
       // The "Neural Mesh" Core Components (CTO Branding)
@@ -250,7 +250,7 @@ const App: React.FC = () => {
           </div>
         </div>
       );
-      default: return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} />;
+      default: return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} onLegal={() => setActiveView('legal-hub')} />;
     }
   };
 

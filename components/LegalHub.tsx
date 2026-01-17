@@ -14,7 +14,7 @@ export default function LegalHub() {
   const tosSections = [
     {
       title: "1. Neural Liability Waiver",
-      content: "VeritrustX utilizes advanced neural reasoning models to generate forensic insights. While our accuracy rate is approximately 98.4%, all 'Verdicts' provided by the system are advisory. Clients agree that final hiring decisions remain a human responsibility. VeritrustX is not liable for indirect damages resulting from AI-generated logical inferences."
+      content: "VeriTrustX utilizes advanced neural reasoning models to generate forensic insights. While our accuracy rate is approximately 98.4%, all 'Verdicts' provided by the system are advisory. Clients agree that final hiring decisions remain a human responsibility. VeriTrustX is not liable for indirect damages resulting from AI-generated logical inferences."
     },
     {
       title: "2. Forensic Consent Requirements",
@@ -22,7 +22,7 @@ export default function LegalHub() {
     },
     {
       title: "3. Brand Protection & Intellectual Property",
-      content: "The name 'VeritrustX', its logo, and proprietary forensic protocols are protected intellectual property. Any unauthorized use of our brand name for commercial gain, impersonation, or deceptive practices will result in: (a) Immediate and permanent revocation of system access, (b) Administrative fines starting at ₹10,00,000 per violation, (c) Legal injunctions and pursuit of maximum statutory damages, and (d) Public disclosure of the infringing entity as a 'High-Risk Actor' within our global trust mesh."
+      content: "The name 'VeriTrustX', its logo, and proprietary forensic protocols are protected intellectual property. Any unauthorized use of our brand name for commercial gain, impersonation, or deceptive practices will result in: (a) Immediate and permanent revocation of system access, (b) Administrative fines starting at ₹10,00,000 per violation, (c) Legal injunctions and pursuit of maximum statutory damages, and (d) Public disclosure of the infringing entity as a 'High-Risk Actor' within our global trust mesh."
     },
     {
       title: "4. Service Level Agreement (SLA)",
@@ -50,7 +50,7 @@ export default function LegalHub() {
              <Scale size={14} className="text-slate-500" />
              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Compliance & Sovereignty</span>
           </div>
-          <h2 className="text-5xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-5xl font-black text-slate-900 tracking-tight font-quantum">
             Legal <span className="text-indigo-600">Infrastructure</span>
           </h2>
           <p className="text-lg text-slate-500 font-medium leading-relaxed mt-2">
@@ -108,7 +108,7 @@ export default function LegalHub() {
                  <ShieldPlus size={14} /> Brand Safeguard
               </h4>
               <p className="text-xs text-slate-600 leading-relaxed font-medium italic">
-                Unauthorized use of "VeritrustX" triggers an automated intellectual property enforcement protocol.
+                Unauthorized use of "VeriTrustX" triggers an automated intellectual property enforcement protocol.
               </p>
               <div className="pt-4 border-t border-red-200 flex items-center gap-3">
                  <Coins size={16} className="text-red-600" />
@@ -128,7 +128,7 @@ export default function LegalHub() {
               {activeTab === 'tos' && (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                    <div className="flex items-center justify-between border-b border-slate-100 pb-8">
-                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 font-quantum">
                          <Gavel className="text-indigo-600" /> Protocol Terms of Service
                       </h3>
                       <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 transition-all">
@@ -163,7 +163,7 @@ export default function LegalHub() {
               {activeTab === 'privacy' && (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                    <div className="flex items-center justify-between border-b border-slate-100 pb-8">
-                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 font-quantum">
                          <Lock className="text-indigo-600" /> Data Privacy Protocol
                       </h3>
                       <button className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-indigo-600 transition-all">
@@ -193,7 +193,7 @@ export default function LegalHub() {
               {activeTab === 'compliance' && (
                 <div className="space-y-10 animate-in fade-in slide-in-from-right-4 duration-500">
                    <div className="flex items-center justify-between border-b border-slate-100 pb-8">
-                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3">
+                      <h3 className="text-2xl font-black text-slate-900 flex items-center gap-3 font-quantum">
                          <ShieldCheck className="text-indigo-600" /> Compliance Registry
                       </h3>
                    </div>

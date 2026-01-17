@@ -10,9 +10,10 @@ import {
 interface HomeProps {
   onEnter: () => void;
   onContact: () => void;
+  onLegal: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
+const Home: React.FC<HomeProps> = ({ onEnter, onContact, onLegal }) => {
   return (
     <div className="space-y-24 animate-in fade-in duration-1000 pb-20">
       
@@ -157,8 +158,12 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact }) => {
          </div>
       </section>
 
-      <div className="text-center pt-10 border-t border-zinc-100 mx-10">
-        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX Protocol • Global Integrity Standard • Intellectual Property of Challa Aditya</p>
+      <div className="text-center pt-10 border-t border-zinc-100 mx-10 pb-10 flex flex-col xl:flex-row items-center justify-between gap-6">
+        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX Protocol • Global Integrity Standard</p>
+        <div className="flex gap-8">
+           <button onClick={onLegal} className="text-[10px] font-black text-zinc-400 hover:text-indigo-600 uppercase tracking-widest transition-colors">Legal Hub</button>
+           <button onClick={onContact} className="text-[10px] font-black text-zinc-400 hover:text-indigo-600 uppercase tracking-widest transition-colors">Contact</button>
+        </div>
       </div>
     </div>
   );

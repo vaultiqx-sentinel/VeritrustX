@@ -7,7 +7,7 @@ import {
 import { analyzeDocumentImage, performQuantumAudit } from '../services/gemini';
 
 interface ForensicLabProps {
-  onVerdict?: (name: string, role: string, score: number, verdict: string, report: string) => void;
+  onVerdict?: (name: string, role: string, score: number, verdict: string) => void;
 }
 
 const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
@@ -97,7 +97,7 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
       const verdict = isGrounded ? "Verified" : "Flagged";
       
       if (onVerdict) {
-        onVerdict(candidateName || "Unknown Subject", companyName || "Audit", score, verdict, report || "");
+        onVerdict(candidateName || "Unknown Subject", companyName || "Audit", score, verdict);
       }
     } catch (err) {
       setResult("Forensic Link Fault: Neural mesh unreachable.");
