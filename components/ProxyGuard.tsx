@@ -1,17 +1,17 @@
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
-  UserCheck, ShieldAlert, Video, Mic, Eye, Loader2, Binary, 
-  CheckCircle2, XCircle, AlertTriangle, Scan, Search, Maximize2, 
-  Fingerprint, Volume2, UserMinus, Link2, Camera, X, Globe, Hash,
-  Activity, Mic2, Zap, Waves, Lock
+  UserCheck, ShieldAlert, Video, Mic2, Loader2, Link2, X, Hash, 
+  Eye, Waves, Activity, Fingerprint
 } from 'lucide-react';
+import { VeritrustTheme } from '../types';
 
 export interface ProxyGuardProps {
+  theme?: VeritrustTheme;
   onFraudDetected?: (name: string, role: string, score: number, verdict: string) => void;
 }
 
-const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
+const ProxyGuard: React.FC<ProxyGuardProps> = ({ theme = 'emerald', onFraudDetected }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<string | null>(null);
   const [meetingUrl, setMeetingUrl] = useState('');
@@ -38,10 +38,12 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
   const dataArrayRef = useRef<Uint8Array | null>(null);
   const audioLevelRef = useRef(0); 
 
-  // History Buffers for Smoothing (Window of 30 frames ~ 1 sec)
+  // History Buffers for Smoothing (Window of 20 frames)
   const lipHistoryRef = useRef<{audio: number, mouth: number}[]>([]);
   const gazeTimerRef = useRef<number | null>(null);
   const violationTriggeredRef = useRef(false);
+
+  const isDark = theme === 'onyx';
 
   // 🧠 THE AI BRAIN (Real-time Gaze & Behavior Tracking)
   useEffect(() => {
@@ -67,7 +69,6 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
       faceMesh.onResults((results: any) => {
         if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
           setFaceDetected(false);
-          // Reset Voice Integrity if no face
           setVoiceIntegrity('SILENT');
           return;
         }
@@ -97,9 +98,7 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
                  setIsCheatingDetected(true);
                  setGazeViolationCount(prev => prev + 1);
                  violationTriggeredRef.current = true;
-                 // Auto-trigger fraud callback if sustained
                  if(onFraudDetected && violationTriggeredRef.current) {
-                    // We don't call it repeatedly to avoid spam, mainly visual
                     console.warn("Fraud Event Triggered: Sustained Gaze Violation");
                  }
               }, 2000); // 2 second tolerance
@@ -122,13 +121,12 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
 
         // Push to history buffer
         lipHistoryRef.current.push({ audio: currentAudio, mouth: mouthOpenDist });
-        if (lipHistoryRef.current.length > 20) lipHistoryRef.current.shift(); // Keep last 20 frames
+        if (lipHistoryRef.current.length > 20) lipHistoryRef.current.shift();
 
         // Analyze Buffer
         const avgAudio = lipHistoryRef.current.reduce((sum, item) => sum + item.audio, 0) / lipHistoryRef.current.length;
         const avgMouth = lipHistoryRef.current.reduce((sum, item) => sum + item.mouth, 0) / lipHistoryRef.current.length;
 
-        // Thresholds
         const AUDIO_ACTIVE_THRESHOLD = 15; 
         const MOUTH_MOVE_THRESHOLD = 0.005; 
 
@@ -172,7 +170,7 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
   // AUDIO ANALYZER LOOP
   const analyzeAudioFrame = () => {
       if (analyserRef.current && dataArrayRef.current && isCameraActive) {
-          // Fix for TS Error: explicitly cast or use 'any' if strict types mismatch lib definition
+          // TS FIX: Cast to any or appropriate type to bypass strict Uint8Array mismatch
           analyserRef.current.getByteFrequencyData(dataArrayRef.current as any);
           
           const avg = dataArrayRef.current.reduce((a,b) => a+b, 0) / dataArrayRef.current.length;
@@ -232,11 +230,9 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
     }
   };
 
-  // 🔒 SHA-256 GENERATOR FOR VIDEO FRAME
   const generateFrameHash = async () => {
     if (!videoRef.current) return null;
     
-    // 1. Capture Frame to Canvas
     const canvas = document.createElement('canvas');
     canvas.width = videoRef.current.videoWidth;
     canvas.height = videoRef.current.videoHeight;
@@ -246,7 +242,6 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
     ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
     const base64Data = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
 
-    // 2. Convert to Binary
     const raw = window.atob(base64Data);
     const rawLength = raw.length;
     const array = new Uint8Array(new ArrayBuffer(rawLength));
@@ -254,7 +249,6 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
         array[i] = raw.charCodeAt(i);
     }
 
-    // 3. Hash
     const hashBuffer = await crypto.subtle.digest('SHA-256', array);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
@@ -262,7 +256,6 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
     return hashHex.toUpperCase();
   };
 
-  // 🚀 INTEGRATED AUDIT
   const handleRunAudit = async () => {
     if (!isCameraActive) {
         alert("Please initiate Forensic Video Link first.");
@@ -275,7 +268,7 @@ const ProxyGuard: React.FC<ProxyGuardProps> = ({ onFraudDetected }) => {
     setBiometricHash(dna);
 
     try {
-      // 2. Determine Verdict Locally based on Monitors
+      // Determine Verdict Locally
       const isFraud = isCheatingDetected || lipSyncStatus === 'DESYNC' || voiceIntegrity === 'SYNTHETIC_SUSPECT' || gazeViolationCount > 3;
       
       let fraudDetails = "";
@@ -341,13 +334,12 @@ RECOMMENDATION: ${data.recommendation}
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700 pb-20">
-      {/* Header with Sentinel Status */}
-      <div className="flex flex-col lg:flex-row justify-between items-start gap-6 border-b border-zinc-100 pb-8">
+      <div className={`flex flex-col lg:flex-row justify-between items-start gap-6 border-b pb-8 ${isDark ? 'border-white/10' : 'border-zinc-100'}`}>
         <div className="max-w-xl">
-           <h2 className="text-5xl font-black text-zinc-900 tracking-tighter mb-4">
+           <h2 className={`text-5xl font-black tracking-tighter mb-4 ${isDark ? 'text-white' : 'text-zinc-900'}`}>
             Proxy <span className="text-indigo-600">Guard</span>
            </h2>
-           <p className="text-zinc-500 font-medium leading-relaxed italic">
+           <p className={`font-medium leading-relaxed italic ${isDark ? 'text-zinc-400' : 'text-zinc-500'}`}>
              "Real-time Multi-Factor Biometric Scrutinization."
            </p>
         </div>
@@ -361,9 +353,8 @@ RECOMMENDATION: ${data.recommendation}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-         <div className="bg-white p-10 rounded-[3.5rem] border-2 border-zinc-100 space-y-8 relative overflow-hidden shadow-sm">
+         <div className={`p-10 rounded-[3.5rem] border-2 space-y-8 relative overflow-hidden shadow-sm ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
             
-            {/* Uplink Configuration */}
             <div className="space-y-4">
                <label className="text-[10px] font-black text-zinc-400 uppercase tracking-widest ml-1">Secure Meeting Uplink</label>
                <div className="flex gap-3">
@@ -374,7 +365,7 @@ RECOMMENDATION: ${data.recommendation}
                         value={meetingUrl}
                         onChange={(e) => setMeetingUrl(e.target.value)}
                         placeholder="https://meet.google.com/abc-defg-hij"
-                        className="w-full pl-12 pr-4 py-4 bg-zinc-50 border-2 border-zinc-100 rounded-2xl outline-none focus:border-indigo-500 font-medium text-sm transition-all"
+                        className={`w-full pl-12 pr-4 py-4 border-2 rounded-2xl outline-none focus:border-indigo-500 font-medium text-sm transition-all ${isDark ? 'bg-black border-white/10 text-white' : 'bg-zinc-50 border-zinc-100 text-zinc-900'}`}
                      />
                   </div>
                   {!isCameraActive ? (
@@ -385,7 +376,6 @@ RECOMMENDATION: ${data.recommendation}
                </div>
             </div>
 
-            {/* Video Frame with AI Neural Overlay */}
             <div className="aspect-video bg-zinc-900 rounded-[2.5rem] border-4 border-zinc-100 relative overflow-hidden flex items-center justify-center group shadow-inner">
                {isCameraActive ? (
                   <>
@@ -395,14 +385,12 @@ RECOMMENDATION: ${data.recommendation}
                            {[...Array(36)].map((_, i) => <div key={i} className="border-[0.5px] border-emerald-500/10"></div>)}
                         </div>
                         
-                        {/* Dynamic Eye Tracker Box */}
                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 border-2 rounded-full animate-pulse transition-all duration-300 ${isCheatingDetected ? 'border-rose-500 shadow-[0_0_40px_rgba(244,63,94,0.6)]' : 'border-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.3)]'}`}>
                            <div className={`absolute top-0 left-1/2 -translate-x-1/2 -mt-6 text-white text-[8px] font-black px-2 py-0.5 rounded ${isCheatingDetected ? 'bg-rose-500' : 'bg-emerald-500'}`}>
                              {isCheatingDetected ? `FRAUD ATTEMPT: ${gazeDirection}` : 'BIOMETRIC_LOCK'}
                            </div>
                         </div>
 
-                        {/* Audio Spectrum Visualizer */}
                         <div className="absolute bottom-6 left-6 flex gap-1 items-end h-8">
                            {[...Array(8)].map((_, i) => (
                              <div 
@@ -413,7 +401,6 @@ RECOMMENDATION: ${data.recommendation}
                            ))}
                         </div>
 
-                        {/* Warnings Overlay */}
                         <div className="absolute top-4 right-4 flex flex-col gap-2 items-end">
                             {lipSyncStatus === 'DESYNC' && (
                                 <div className="px-3 py-1 bg-rose-600 text-white text-[9px] font-black uppercase tracking-widest rounded-lg shadow-lg flex items-center gap-2 animate-pulse">
@@ -442,23 +429,22 @@ RECOMMENDATION: ${data.recommendation}
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-               <StatusMonitor label="Iris Tracker" status={isCheatingDetected ? 'fail' : faceDetected ? 'scanning' : 'idle'} />
-               <StatusMonitor label="Lip Sync" status={lipSyncStatus === 'DESYNC' ? 'fail' : faceDetected ? 'scanning' : 'idle'} />
-               <StatusMonitor label="Voice DNA" status={voiceIntegrity === 'SYNTHETIC_SUSPECT' ? 'fail' : audioLevel > 5 ? 'scanning' : 'idle'} />
-               <StatusMonitor label="Neural DNA" status={faceDetected ? 'scanning' : 'idle'} />
+               <StatusMonitor isDark={isDark} label="Iris Tracker" status={isCheatingDetected ? 'fail' : faceDetected ? 'scanning' : 'idle'} />
+               <StatusMonitor isDark={isDark} label="Lip Sync" status={lipSyncStatus === 'DESYNC' ? 'fail' : faceDetected ? 'scanning' : 'idle'} />
+               <StatusMonitor isDark={isDark} label="Voice DNA" status={voiceIntegrity === 'SYNTHETIC_SUSPECT' ? 'fail' : audioLevel > 5 ? 'scanning' : 'idle'} />
+               <StatusMonitor isDark={isDark} label="Neural DNA" status={faceDetected ? 'scanning' : 'idle'} />
             </div>
 
             <button 
                onClick={handleRunAudit}
                disabled={isAnalyzing || !isCameraActive}
-               className="w-full py-6 bg-zinc-900 text-white font-black rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-30"
+               className={`w-full py-6 font-black rounded-3xl transition-all shadow-2xl flex items-center justify-center gap-3 relative overflow-hidden group disabled:opacity-30 ${isDark ? 'bg-white text-zinc-900' : 'bg-zinc-900 text-white'}`}
             >
                {isAnalyzing ? <Loader2 className="animate-spin" /> : <ShieldAlert size={20} className="text-rose-500" />}
                {isAnalyzing ? 'UPLINKING TO NEURAL MESH...' : 'EXECUTE FORENSIC AUDIT'}
             </button>
          </div>
 
-         {/* Verdict Output Area */}
          <div className="space-y-6">
             {analysisResult ? (
                <div className={`bg-zinc-950 border-4 rounded-[3.5rem] p-12 space-y-8 animate-in slide-in-from-right-8 duration-500 shadow-2xl relative overflow-hidden ${analysisResult.includes('TERMINATED') ? 'border-rose-500/20' : 'border-emerald-500/20'}`}>
@@ -467,7 +453,6 @@ RECOMMENDATION: ${data.recommendation}
                     <h3 className="text-3xl font-black text-white font-quantum uppercase">Forensic Result</h3>
                   </div>
                   
-                  {/* 🧬 SHA-256 DISPLAY */}
                   {biometricHash && (
                      <div className="p-4 bg-white/5 rounded-2xl border border-white/10 space-y-2">
                         <div className="flex items-center gap-2 text-indigo-400 text-[9px] font-black uppercase tracking-widest">
@@ -488,10 +473,10 @@ RECOMMENDATION: ${data.recommendation}
                   </div>
                </div>
             ) : (
-               <div className="h-full min-h-[500px] border-4 border-dashed border-zinc-100 rounded-[3.5rem] flex flex-col items-center justify-center p-16 text-center bg-zinc-50">
-                  <Fingerprint size={48} className="text-zinc-200 mb-8" />
-                  <h4 className="text-2xl font-black text-zinc-900 uppercase">Sentinel Standby</h4>
-                  <p className="text-sm font-bold text-zinc-400 mt-4 uppercase tracking-[0.2em] italic">Connect the meeting uplink to begin scrutinization.</p>
+               <div className={`h-full min-h-[500px] border-4 border-dashed rounded-[3.5rem] flex flex-col items-center justify-center p-16 text-center ${isDark ? 'bg-zinc-900/50 border-white/10' : 'bg-zinc-50 border-zinc-100'}`}>
+                  <Fingerprint size={48} className={isDark ? 'text-zinc-600' : 'text-zinc-200'} />
+                  <h4 className={`text-2xl font-black uppercase mt-8 ${isDark ? 'text-white' : 'text-zinc-900'}`}>Sentinel Standby</h4>
+                  <p className={`text-sm font-bold mt-4 uppercase tracking-[0.2em] italic ${isDark ? 'text-zinc-500' : 'text-zinc-400'}`}>Connect the meeting uplink to begin scrutinization.</p>
                </div>
             )}
          </div>
@@ -500,13 +485,18 @@ RECOMMENDATION: ${data.recommendation}
   );
 };
 
-// --- Sub-component for Status Monitoring ---
-const StatusMonitor = ({ label, status }: { label: string, status: string }) => {
+const StatusMonitor = ({ label, status, isDark }: { label: string, status: string, isDark: boolean }) => {
   const isScanning = status === 'scanning';
   const isFail = status === 'fail';
   return (
     <div className={`p-4 rounded-3xl border-2 transition-all flex flex-col items-center text-center gap-2 ${
-      isFail ? 'bg-rose-50 border-rose-200 shadow-md' : isScanning ? 'bg-emerald-50 border-emerald-100 shadow-sm' : 'bg-zinc-50 border-zinc-100'
+      isFail 
+        ? 'bg-rose-50 border-rose-200 shadow-md' 
+        : isScanning 
+          ? 'bg-emerald-50 border-emerald-100 shadow-sm' 
+          : isDark 
+            ? 'bg-black/40 border-white/5' 
+            : 'bg-zinc-50 border-zinc-100'
     }`}>
        <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest">{label}</p>
        <div className={`w-2 h-2 rounded-full ${

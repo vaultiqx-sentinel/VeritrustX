@@ -1,12 +1,16 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Printer, Landmark, ShieldCheck, ArrowLeft, Plus, 
   Trash2, CheckCircle2, Globe, ReceiptText, Zap, Save, Edit3, Lock, Loader2, Calendar
 } from 'lucide-react';
+import { VeritrustTheme } from '../types';
 
-const InvoicePortal: React.FC = () => {
+const InvoicePortal: React.FC<{ theme?: VeritrustTheme }> = ({ theme = 'emerald' }) => {
   const [showPreview, setShowPreview] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  const isDark = theme === 'onyx';
 
   // 1. Pricing Logic Table (Base Monthly Rates)
   const TIER_RATES = {
@@ -57,10 +61,13 @@ const InvoicePortal: React.FC = () => {
 
   if (showPreview) {
     return (
-      /* 📄 THE DYNAMIC PDF VIEW */
+      /* 📄 THE DYNAMIC PDF VIEW (Always White for Print) */
       <div className="space-y-10 animate-in fade-in duration-500 pb-20">
         <div className="flex justify-between items-center print:hidden">
-          <button onClick={() => setShowPreview(false)} className="flex items-center gap-2 text-zinc-400 hover:text-zinc-900 font-black uppercase text-[10px] tracking-widest">
+          <button 
+            onClick={() => setShowPreview(false)} 
+            className={`flex items-center gap-2 font-black uppercase text-[10px] tracking-widest ${isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-400 hover:text-zinc-900'}`}
+          >
             <ArrowLeft size={16} /> Return to Configurator
           </button>
           <button onClick={() => window.print()} className="px-10 py-5 bg-indigo-600 text-white font-black rounded-2xl flex items-center gap-3 hover:brightness-110 shadow-2xl">
@@ -167,11 +174,11 @@ const InvoicePortal: React.FC = () => {
   }
 
   return (
-    /* 🏗️ THE DYNAMIC SETTLEMENT CONFIGURATOR */
+    /* 🏗️ THE DYNAMIC SETTLEMENT CONFIGURATOR (Theme Aware) */
     <div className="space-y-12 animate-in fade-in duration-700 pb-20">
       
       {/* 🟢 TOP SECTION: FOUNDER'S TREASURY */}
-      <div className="bg-zinc-900 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden border-b-8 border-indigo-600">
+      <div className={`p-10 rounded-[3.5rem] shadow-2xl relative overflow-hidden border-b-8 border-indigo-600 ${isDark ? 'bg-zinc-900 text-white' : 'bg-zinc-900 text-white'}`}>
          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10 relative z-10">
             <div>
                <h3 className="text-2xl font-black font-quantum flex items-center gap-3">
@@ -198,18 +205,30 @@ const InvoicePortal: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
          <div className="lg:col-span-2 space-y-8">
-            <div className="bg-white border-4 border-zinc-100 p-10 rounded-[3rem] shadow-sm space-y-10">
-               <div className="flex justify-between items-center border-b-2 border-zinc-50 pb-6">
-                  <h4 className="text-xl font-black text-zinc-900 flex items-center gap-3"><Edit3 className="text-indigo-600" /> License Configurator</h4>
-                  <button onClick={() => setShowPreview(true)} className="px-10 py-4 bg-zinc-900 text-white font-black rounded-2xl text-[10px] uppercase shadow-lg hover:bg-emerald-600 transition-all">Preview & Sign Invoice</button>
+            <div className={`border-4 p-10 rounded-[3rem] shadow-sm space-y-10 ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
+               <div className={`flex justify-between items-center border-b-2 pb-6 ${isDark ? 'border-white/5' : 'border-zinc-50'}`}>
+                  <h4 className={`text-xl font-black flex items-center gap-3 ${isDark ? 'text-white' : 'text-zinc-900'}`}><Edit3 className="text-indigo-600" /> License Configurator</h4>
+                  <button onClick={() => setShowPreview(true)} className={`px-10 py-4 font-black rounded-2xl text-[10px] uppercase shadow-lg transition-all ${isDark ? 'bg-white text-zinc-900 hover:bg-zinc-200' : 'bg-zinc-900 text-white hover:bg-emerald-600'}`}>Preview & Sign Invoice</button>
                </div>
                
                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {/* CLIENT INFO */}
                   <div className="space-y-6">
                      <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Client Metadata</p>
-                     <input type="text" value={invoiceData.clientName} onChange={(e) => setInvoiceData({...invoiceData, clientName: e.target.value})} placeholder="Client Name..." className="w-full px-6 py-4 bg-zinc-50 border-2 border-zinc-100 rounded-2xl outline-none focus:border-indigo-500 font-bold" />
-                     <textarea value={invoiceData.clientAddress} onChange={(e) => setInvoiceData({...invoiceData, clientAddress: e.target.value})} placeholder="Billing Address..." rows={3} className="w-full px-6 py-4 bg-zinc-50 border-2 border-zinc-100 rounded-2xl outline-none focus:border-indigo-500 font-bold resize-none" />
+                     <input 
+                       type="text" 
+                       value={invoiceData.clientName} 
+                       onChange={(e) => setInvoiceData({...invoiceData, clientName: e.target.value})} 
+                       placeholder="Client Name..." 
+                       className={`w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-indigo-500 font-bold ${isDark ? 'bg-black/40 border-white/10 text-white placeholder-zinc-600' : 'bg-zinc-50 border-zinc-100 text-zinc-900'}`} 
+                     />
+                     <textarea 
+                       value={invoiceData.clientAddress} 
+                       onChange={(e) => setInvoiceData({...invoiceData, clientAddress: e.target.value})} 
+                       placeholder="Billing Address..." 
+                       rows={3} 
+                       className={`w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-indigo-500 font-bold resize-none ${isDark ? 'bg-black/40 border-white/10 text-white placeholder-zinc-600' : 'bg-zinc-50 border-zinc-100 text-zinc-900'}`} 
+                     />
                   </div>
 
                   {/* LICENSE MATH */}
@@ -221,11 +240,11 @@ const InvoicePortal: React.FC = () => {
                            <select 
                              value={invoiceData.selectedTier}
                              onChange={(e) => setInvoiceData({...invoiceData, selectedTier: e.target.value as any})}
-                             className="w-full px-6 py-4 bg-zinc-900 text-white rounded-2xl font-black text-sm outline-none border-2 border-zinc-900"
+                             className={`w-full px-6 py-4 rounded-2xl font-black text-sm outline-none border-2 ${isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-zinc-900 text-white border-zinc-900'}`}
                            >
-                              <option value="Sentinel">Sentinel Tier (₹49k/mo)</option>
-                              <option value="Fortress">Fortress Tier (₹199k/mo)</option>
-                              <option value="Citadel">Citadel Tier (₹499k/mo)</option>
+                              <option value="Sentinel" className="bg-zinc-900">Sentinel Tier (₹49k/mo)</option>
+                              <option value="Fortress" className="bg-zinc-900">Fortress Tier (₹199k/mo)</option>
+                              <option value="Citadel" className="bg-zinc-900">Citadel Tier (₹499k/mo)</option>
                            </select>
                         </div>
                         <div className="space-y-1">
@@ -233,12 +252,12 @@ const InvoicePortal: React.FC = () => {
                            <select 
                              value={invoiceData.durationMonths}
                              onChange={(e) => setInvoiceData({...invoiceData, durationMonths: parseInt(e.target.value)})}
-                             className="w-full px-6 py-4 bg-zinc-50 border-2 border-zinc-100 rounded-2xl font-black text-sm outline-none focus:border-indigo-500"
+                             className={`w-full px-6 py-4 border-2 rounded-2xl font-black text-sm outline-none focus:border-indigo-500 ${isDark ? 'bg-black/40 border-white/10 text-white' : 'bg-zinc-50 border-zinc-100'}`}
                            >
-                              <option value={1}>1 Month Protocol Access</option>
-                              <option value={3}>3 Months Strategic Term</option>
-                              <option value={6}>6 Months Institutional Term</option>
-                              <option value={12}>1 Year Performance Term</option>
+                              <option value={1} className={isDark ? "bg-zinc-900" : ""}>1 Month Protocol Access</option>
+                              <option value={3} className={isDark ? "bg-zinc-900" : ""}>3 Months Strategic Term</option>
+                              <option value={6} className={isDark ? "bg-zinc-900" : ""}>6 Months Institutional Term</option>
+                              <option value={12} className={isDark ? "bg-zinc-900" : ""}>1 Year Performance Term</option>
                            </select>
                         </div>
                      </div>
@@ -248,14 +267,14 @@ const InvoicePortal: React.FC = () => {
          </div>
 
          {/* LIVE CALCULATION BOX */}
-         <div className="bg-white border-4 border-zinc-100 p-10 rounded-[3rem] shadow-sm flex flex-col justify-center text-center space-y-6">
-            <div className="p-6 bg-indigo-50 rounded-full w-fit mx-auto"><ReceiptText className="text-indigo-600" size={40} /></div>
-            <h4 className="text-xl font-black text-zinc-900 uppercase">Calculated Total</h4>
+         <div className={`border-4 p-10 rounded-[3rem] shadow-sm flex flex-col justify-center text-center space-y-6 ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
+            <div className={`p-6 rounded-full w-fit mx-auto ${isDark ? 'bg-white/5' : 'bg-indigo-50'}`}><ReceiptText className="text-indigo-600" size={40} /></div>
+            <h4 className={`text-xl font-black uppercase ${isDark ? 'text-white' : 'text-zinc-900'}`}>Calculated Total</h4>
             <div>
                <p className="text-5xl font-black text-indigo-600 tracking-tighter">₹{grandTotal.toLocaleString()}</p>
                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em] mt-2">Incl. 18% Institutional GST</p>
             </div>
-            <div className="pt-6 border-t border-zinc-50">
+            <div className={`pt-6 border-t ${isDark ? 'border-white/5' : 'border-zinc-50'}`}>
                <p className="text-[10px] font-bold text-emerald-600 uppercase">Current Savings detail will be auto-applied</p>
             </div>
          </div>

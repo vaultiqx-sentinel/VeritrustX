@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { 
   ShieldCheck, Search, Fingerprint, ReceiptText, Key, Bell, 
   MessageSquare, Activity, Globe, Rocket, Crown, Cpu, Network, Scan, 
-  UserCheck, Map, Target, X, Scale
+  UserCheck, Map, Target, X, Scale, History
 } from 'lucide-react';
 import { VeritrustTheme } from '../types';
 
@@ -48,6 +48,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     
     // --- BUSINESS OPERATIONS ---
     { id: 'bgv-vault', label: 'BGV Vault', icon: ShieldCheck, category: 'Ops' },
+    { id: 'audit-history', label: 'Audit History', icon: History, category: 'Ops' },
     { id: 'licensing', label: 'Licensing Hub', icon: Key, category: 'Ops' },
     { id: 'invoice-portal', label: 'Invoice Portal', icon: ReceiptText, category: 'Ops' },
     

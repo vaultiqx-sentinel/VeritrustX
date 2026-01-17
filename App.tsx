@@ -149,18 +149,19 @@ const App: React.FC = () => {
       case 'ceo-command': return <FounderAnalytics />;
       
       // The "Neural Mesh" Core Components (CTO Branding)
-      case 'truth-engine': return <IntegrityScanner onAuditComplete={handleAuditCompletion} />; // Was IntegrityScanner
-      case 'universal-trust': return <GlobalPulse />; // Was GlobalPulse
+      // UPDATED: Pass theme prop to ensure visibility in dark/light modes
+      case 'truth-engine': return <IntegrityScanner theme={theme} onAuditComplete={handleAuditCompletion} />; 
+      case 'universal-trust': return <GlobalPulse theme={theme} />; 
       
       // Labs & Simulation
-      case 'vetting-simulator': return <VettingSimulator />; // NEW Component for Demo
+      case 'vetting-simulator': return <VettingSimulator />; 
       case 'forensic-lab': return <ForensicLab onVerdict={handleAuditCompletion} />;
-      case 'proxy-guard': return <ProxyGuard onFraudDetected={(n, r, s, v) => handleAuditCompletion(n, r, s, v, "Proxy Fraud Attempt")} />;
+      case 'proxy-guard': return <ProxyGuard theme={theme} onFraudDetected={(n, r, s, v) => handleAuditCompletion(n, r, s, v, "Proxy Fraud Attempt")} />;
       
       // Strategy & Vision
-      case 'strategic-blueprint': return <MarketPosition />; // Mapped to MarketPosition
-      case 'strategy-hub': return <IntelligenceHub />; // Mapped to IntelligenceHub
-      case 'vision-roadmap': return <PitchDeck />; // Mapped to PitchDeck
+      case 'strategic-blueprint': return <MarketPosition />;
+      case 'strategy-hub': return <IntelligenceHub />; 
+      case 'vision-roadmap': return <PitchDeck />; 
       
       // Ops & System
       case 'bgv-vault': 
@@ -192,14 +193,13 @@ const App: React.FC = () => {
       case 'business-value': return <BusinessValue />;
       case 'updates': return <ProtocolUpdates />;
       case 'candidate-portal': return <CandidatePortal />;
-      case 'licensing': return <LicensingHub />;
-      case 'invoice-portal': return <InvoicePortal />;
+      case 'licensing': return <LicensingHub theme={theme} />;
+      case 'invoice-portal': return <InvoicePortal theme={theme} />;
       case 'legal-hub': return <LegalHub />;
       case 'contact-us': return <ContactUs />;
       
       case 'shared': {
         const recordToDisplay = selectedRecord ?? records[0];
-        // Guard clause to prevent rendering without a record
         if (!recordToDisplay) {
             return (
               <div className="flex flex-col items-center justify-center min-h-[500px] text-zinc-400">
@@ -229,7 +229,7 @@ const App: React.FC = () => {
               <div className={`p-8 rounded-[2.5rem] space-y-4 border ${theme === 'onyx' ? 'bg-white/5 border-white/5' : 'bg-emerald-50/20 border-emerald-50'}`}>
                  <div className="flex items-center justify-between">
                     <div>
-                       <h4 className="font-black dark:text-white text-zinc-900">Presentation Hibernation</h4>
+                       <h4 className={`font-black ${theme === 'onyx' ? 'text-white' : 'text-zinc-900'}`}>Presentation Hibernation</h4>
                        <p className="text-[10px] text-zinc-400 uppercase font-black tracking-widest mt-1">Freezes neural logic for demos</p>
                     </div>
                     <button 
@@ -238,6 +238,16 @@ const App: React.FC = () => {
                     >
                       <div className={`absolute top-1 w-6 h-6 bg-white rounded-full transition-all ${isHibernation ? 'left-7' : 'left-1'}`}></div>
                     </button>
+                 </div>
+              </div>
+              
+              <div className={`p-8 rounded-[2.5rem] space-y-4 border ${theme === 'onyx' ? 'bg-white/5 border-white/5' : 'bg-emerald-50/20 border-emerald-50'}`}>
+                 <div className="space-y-4">
+                    <h4 className={`font-black ${theme === 'onyx' ? 'text-white' : 'text-zinc-900'}`}>Interface Theme Spectrum</h4>
+                    <div className="flex gap-3">
+                       <button onClick={() => handleThemeChange('onyx')} className={`px-4 py-2 rounded-lg text-xs font-black uppercase border ${theme === 'onyx' ? 'bg-zinc-100 text-zinc-900 border-white' : 'bg-black text-zinc-500 border-zinc-800'}`}>Onyx (Dark)</button>
+                       <button onClick={() => handleThemeChange('emerald')} className={`px-4 py-2 rounded-lg text-xs font-black uppercase border ${theme === 'emerald' ? 'bg-emerald-500 text-white border-emerald-400' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>Emerald (Light)</button>
+                    </div>
                  </div>
               </div>
             </div>
@@ -255,7 +265,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen flex selection:bg-emerald-500/30 font-sans relative theme-${theme} overflow-x-hidden`}>
+    <div className={`min-h-screen flex selection:bg-emerald-500/30 font-sans relative theme-${theme} overflow-x-hidden ${theme === 'onyx' ? 'bg-zinc-950 text-white' : 'bg-slate-50 text-slate-900'}`}>
       
       {/* MOBILE SIDEBAR OVERLAY */}
       {isSidebarOpen && <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-sm z-[70] lg:hidden" onClick={() => setIsSidebarOpen(false)}></div>}

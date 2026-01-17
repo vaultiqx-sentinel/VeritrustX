@@ -8,23 +8,24 @@ import {
   ArrowUpRight, FileText, Check, ReceiptText, Plus, EyeOff, Eye, Trash2, Lock
 } from 'lucide-react';
 import { generateUpdateMessage, API_BASE } from '../services/gemini';
+import { VeritrustTheme } from '../types';
 
-const EMAIL_TEMPLATES = {
+const EMAIL_TEMPLATES: Record<string, { subject: string, body: string }> = {
   retention: {
-    subject: "VeritrustX License Renewal: [Client Name]",
-    body: "Hi [Name],\n\nWe noticed your [Tier] license is nearing its expiration. Your organization has successfully blocked multiple identity threats using the Neural Mesh.\n\nPlease authorize the renewal via your dashboard."
+    subject: 'Renewal: [Client Name] - VeritrustX Protocol Access',
+    body: "Hi [Name],\n\nOur system indicates your current license node is performing optimally. We've intercepted several high-risk profiles this quarter.\n\nLet's ensure your forensic coverage continues without interruption."
   },
   upsell: {
-    subject: "Scaling Your Identity Firewall: [Client Name]",
-    body: "Hi [Name],\n\nWe've analyzed your high utilization. You are a perfect candidate for our Enterprise Whitelabel tier, which offers 40% lower transactional costs."
+    subject: 'Strategic Upgrade: [Client Name] Neural Capacity',
+    body: "Hi [Name],\n\nYour audit volume has increased. To maintain zero-lag processing, we recommend upgrading to the 'Citadel' tier for dedicated bandwidth and deeper forensic scans."
   },
   aggressive: {
-    subject: "URGENT: Impending Protocol Suspension - [Client Name]",
-    body: "ATTENTION: Your VeritrustX access is set to expire soon. Failure to renew will result in the immediate deactivation of your Proxy Guard surveillance."
+    subject: 'URGENT: [Client Name] Access Termination Warning',
+    body: "Hi [Name],\n\nThis is a final notice regarding your institutional access token. Failure to settle the outstanding balance will result in immediate disconnection from the Neural Mesh.\n\nPlease advise status."
   }
 };
 
-export default function LicensingHub() {
+export default function LicensingHub({ theme = 'emerald' }: { theme?: VeritrustTheme }) {
   const [viewMode, setViewMode] = useState<'founder' | 'client'>('founder');
   const [showNotificationModal, setShowNotificationModal] = useState(false);
   const [showKey, setShowKey] = useState(false);
@@ -38,6 +39,8 @@ export default function LicensingHub() {
   // --- 🟢 REAL DATABASE SYNC ---
   const [activeLicenses, setActiveLicenses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const isDark = theme === 'onyx';
 
   const fetchLicenses = useCallback(async () => {
     try {
@@ -122,7 +125,7 @@ export default function LicensingHub() {
       
       {/* PERSPECTIVE TOGGLE */}
       <div className="flex justify-center">
-         <div className="bg-zinc-100 p-1.5 rounded-2xl flex gap-2 border-2 border-zinc-200">
+         <div className={`p-1.5 rounded-2xl flex gap-2 border-2 ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-zinc-100 border-zinc-200'}`}>
             <button onClick={() => setViewMode('founder')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'founder' ? 'bg-zinc-900 text-white shadow-xl' : 'text-zinc-400 hover:text-zinc-600'}`}>Founder Mesh (Control)</button>
             <button onClick={() => setViewMode('client')} className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${viewMode === 'client' ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-400 hover:text-slate-600'}`}>Client Portal (Customer)</button>
          </div>
@@ -137,7 +140,7 @@ export default function LicensingHub() {
                     <TrendingUp size={14} className="text-indigo-600" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-indigo-700">Founder Intelligence</span>
                  </div>
-                 <h2 className="text-5xl font-black text-zinc-900 tracking-tight font-quantum">License <span className="text-indigo-600">Forge</span></h2>
+                 <h2 className={`text-5xl font-black tracking-tight font-quantum ${isDark ? 'text-white' : 'text-zinc-900'}`}>License <span className="text-indigo-600">Forge</span></h2>
               </div>
               <StatBox label="Active Nodes" value={activeLicenses.filter(l => l.status === 'Active').length} icon={<ShieldCheck />} color="text-emerald-500" />
               <StatBox label="Pending Verification" value={activeLicenses.filter(l => l.status === 'Pending').length} icon={<Lock />} color="text-orange-500" />
@@ -145,29 +148,34 @@ export default function LicensingHub() {
 
            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Provisioning Control */}
-              <div className="bg-white border-4 border-zinc-100 p-10 rounded-[3.5rem] space-y-6 shadow-sm">
-                 <h4 className="text-lg font-black text-zinc-900 flex items-center gap-2"><Plus className="text-indigo-600" /> New Provision</h4>
+              <div className={`border-4 p-10 rounded-[3.5rem] space-y-6 shadow-sm ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
+                 <h4 className={`text-lg font-black flex items-center gap-2 ${isDark ? 'text-white' : 'text-zinc-900'}`}><Plus className="text-indigo-600" /> New Provision</h4>
                  <div className="space-y-4">
-                    <input value={newLicenseName} onChange={(e) => setNewLicenseName(e.target.value)} className="w-full px-6 py-4 bg-zinc-50 border-2 border-zinc-100 rounded-2xl outline-none focus:border-indigo-500 font-bold" placeholder="Assign Client Name..." />
-                    <button onClick={handleGenerateLicense} className="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all shadow-lg">{isGenerating ? <Loader2 className="animate-spin" /> : 'Issue Neural Token'}</button>
+                    <input 
+                      value={newLicenseName} 
+                      onChange={(e) => setNewLicenseName(e.target.value)} 
+                      className={`w-full px-6 py-4 border-2 rounded-2xl outline-none focus:border-indigo-500 font-bold ${isDark ? 'bg-black border-white/10 text-white' : 'bg-zinc-50 border-zinc-100 text-zinc-900'}`} 
+                      placeholder="Assign Client Name..." 
+                    />
+                    <button onClick={handleGenerateLicense} className={`w-full py-4 font-black rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg ${isDark ? 'bg-white text-zinc-900 hover:bg-zinc-200' : 'bg-indigo-600 text-white hover:bg-zinc-900'}`}>{isGenerating ? <Loader2 className="animate-spin" /> : 'Issue Neural Token'}</button>
                  </div>
               </div>
 
               {/* Master Ledger */}
-              <div className="lg:col-span-2 bg-white border-2 border-zinc-100 rounded-[3.5rem] overflow-hidden shadow-sm">
-                 <div className="p-8 bg-zinc-50 border-b-2 border-zinc-100 flex justify-between items-center">
+              <div className={`lg:col-span-2 border-2 rounded-[3.5rem] overflow-hidden shadow-sm ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
+                 <div className={`p-8 border-b-2 flex justify-between items-center ${isDark ? 'bg-white/5 border-white/10' : 'bg-zinc-50 border-zinc-100'}`}>
                     <h4 className="text-xs font-black uppercase tracking-widest text-zinc-400">Central Protocol Registry</h4>
                     <button onClick={fetchLicenses} className="p-2 text-zinc-400 hover:text-indigo-600"><RefreshCcw size={14} /></button>
                  </div>
-                 <div className="divide-y-2 divide-zinc-50">
+                 <div className={`divide-y-2 ${isDark ? 'divide-white/5' : 'divide-zinc-50'}`}>
                     {isLoading ? (
                         <div className="p-20 text-center"><Loader2 className="animate-spin mx-auto text-zinc-200" /></div>
                     ) : activeLicenses.map((lic) => (
-                      <div key={lic.id} className="p-8 flex items-center justify-between hover:bg-zinc-50 transition-colors">
+                      <div key={lic.id} className={`p-8 flex items-center justify-between transition-colors ${isDark ? 'hover:bg-white/5' : 'hover:bg-zinc-50'}`}>
                          <div className="flex items-center gap-5">
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border-2 ${lic.status === 'Active' ? 'border-emerald-100 text-emerald-600' : 'border-orange-100 text-orange-500 animate-pulse'}`}><Building2 size={24} /></div>
                             <div>
-                               <p className="text-md font-black text-zinc-900">{lic.name}</p>
+                               <p className={`text-md font-black ${isDark ? 'text-white' : 'text-zinc-900'}`}>{lic.name}</p>
                                <p className="text-[10px] font-mono text-zinc-400 uppercase">Credits: {lic.credits} • ID: {lic.license_key || 'VX-PENDING'}</p>
                             </div>
                          </div>
@@ -177,7 +185,7 @@ export default function LicensingHub() {
                             ) : (
                               <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-lg text-[9px] font-black uppercase border border-emerald-100"><Check size={12} /> Access Granted</div>
                             )}
-                            <button onClick={() => handlePrepareRenewalDraft(lic)} className="p-3 bg-zinc-100 text-zinc-400 rounded-xl hover:text-indigo-600 transition-all"><Send size={18} /></button>
+                            <button onClick={() => handlePrepareRenewalDraft(lic)} className={`p-3 rounded-xl transition-all ${isDark ? 'bg-white/10 text-white hover:bg-indigo-600' : 'bg-zinc-100 text-zinc-400 hover:text-indigo-600'}`}><Send size={18} /></button>
                          </div>
                       </div>
                     ))}
@@ -189,22 +197,22 @@ export default function LicensingHub() {
         /* ==================== CLIENT: THE SECURE REVEAL ==================== */
         <div className="max-w-4xl mx-auto space-y-10 animate-in slide-in-from-right-4 duration-700">
            {clientDemo ? (
-           <div className="bg-white border-4 border-zinc-100 rounded-[4rem] p-16 shadow-2xl relative overflow-hidden text-center">
+           <div className={`border-4 rounded-[4rem] p-16 shadow-2xl relative overflow-hidden text-center ${isDark ? 'bg-zinc-900 border-white/10' : 'bg-white border-zinc-100'}`}>
               <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 via-indigo-500 to-emerald-500"></div>
               
-              <div className="w-24 h-24 bg-zinc-100 rounded-[2.5rem] flex items-center justify-center text-zinc-300 mx-auto mb-8 shadow-inner overflow-hidden relative">
-                 {clientDemo.status === 'Active' ? <ShieldCheck size={48} className="text-emerald-500" /> : <Lock size={48} className="text-zinc-200" />}
+              <div className={`w-24 h-24 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner overflow-hidden relative ${isDark ? 'bg-white/5 text-zinc-600' : 'bg-zinc-100 text-zinc-300'}`}>
+                 {clientDemo.status === 'Active' ? <ShieldCheck size={48} className="text-emerald-500" /> : <Lock size={48} className={isDark ? "text-zinc-600" : "text-zinc-200"} />}
               </div>
               
               <h3 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.4em] mb-4">Institutional Trust Access</h3>
-              <h4 className="text-5xl font-black text-zinc-900 tracking-tight mb-4 font-quantum">{clientDemo.name}</h4>
+              <h4 className={`text-5xl font-black tracking-tight mb-4 font-quantum ${isDark ? 'text-white' : 'text-zinc-900'}`}>{clientDemo.name}</h4>
               
-              <div className={`mt-12 p-12 rounded-[3.5rem] border-4 transition-all relative overflow-hidden ${clientDemo.status === 'Active' ? 'bg-emerald-50/50 border-emerald-100' : 'bg-slate-50 border-slate-200'}`}>
+              <div className={`mt-12 p-12 rounded-[3.5rem] border-4 transition-all relative overflow-hidden ${clientDemo.status === 'Active' ? (isDark ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-emerald-50/50 border-emerald-100') : (isDark ? 'bg-white/5 border-white/10' : 'bg-slate-50 border-slate-200')}`}>
                  <p className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] mb-6">Neural Access Token (Secret Key)</p>
                  
                  {clientDemo.status === 'Active' ? (
                    <div className="space-y-6">
-                      <p className={`text-4xl font-mono font-black text-indigo-600 tracking-tighter inline-block px-10 py-6 bg-white rounded-3xl shadow-sm border border-indigo-50 ${showKey ? '' : 'blur-xl select-none'}`}>
+                      <p className={`text-4xl font-mono font-black text-indigo-600 tracking-tighter inline-block px-10 py-6 rounded-3xl shadow-sm border ${isDark ? 'bg-black border-white/10' : 'bg-white border-indigo-50'} ${showKey ? '' : 'blur-xl select-none'}`}>
                          {clientDemo.license_key}
                       </p>
                       <div className="flex justify-center gap-6">
