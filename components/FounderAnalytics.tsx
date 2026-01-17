@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TrendingUp, DollarSign, Zap, Users, BarChart3, ShieldCheck, ArrowUpRight, Crown } from 'lucide-react';
 

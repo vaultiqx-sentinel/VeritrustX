@@ -2,8 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { 
   CheckCircle2, AlertTriangle, Download, Search, 
-  Globe, Fingerprint, Database, ArrowUpDown, 
-  ChevronUp, ChevronDown, XCircle, RefreshCcw, Eye, Share2, FilterX, Loader2, Calendar
+  ArrowUpDown, ChevronUp, ChevronDown, XCircle, RefreshCcw, Eye, Share2, FilterX, Loader2, Calendar, Database, Globe, Fingerprint
 } from 'lucide-react';
 import { VaultRecord } from '../types';
 
@@ -319,7 +318,7 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
                       <div className="flex items-center gap-2">
                         <p className="text-sm font-bold text-zinc-600 truncate">{record.role}</p>
                         
-                        {/* ✅ LOGICAL ICONS FIX: Wrapped in span to avoid TypeScript Title error */}
+                        {/* ✅ LOGICAL ICONS FIX */}
                         {record.entity_verified && (
                             <span title="Entity Authenticity Verified">
                                 <Globe size={14} className="text-emerald-500" />

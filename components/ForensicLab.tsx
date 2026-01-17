@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Camera, Upload, Fingerprint, RefreshCcw, X, Scan, AlertTriangle, ScanLine, 
@@ -96,7 +97,7 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
       const verdict = isGrounded ? "Verified" : "Flagged";
       
       if (onVerdict) {
-        onVerdict(candidateName || "Unknown Subject", companyName || "Audit", score, verdict, report);
+        onVerdict(candidateName || "Unknown Subject", companyName || "Audit", score, verdict, report || "");
       }
     } catch (err) {
       setResult("Forensic Link Fault: Neural mesh unreachable.");
