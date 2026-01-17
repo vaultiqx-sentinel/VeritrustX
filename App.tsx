@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -67,15 +68,15 @@ const App: React.FC = () => {
       if (!response.ok) throw new Error("Connection Lost");
       const data = await response.json();
       
-      const formatted = data.map((r: any) => ({
+      const formatted: VaultRecord[] = data.map((r: any) => ({
         id: r.id,
         name: r.name,
         role: r.role,
         status: r.status === 'GROUNDED' || r.status === 'Verified' ? 'Verified' : r.status === 'TERMINATED' ? 'Failed' : 'Flagged',
         trustScore: r.trustScore,
         created_at: r.created_at,
-        // Ensure photoUrl is either a valid string or null, never undefined if mapped, but typescript allows undefined
-        photoUrl: r.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${r.name}`,
+        // Allows null/undefined to pass through, handled by UI components
+        photoUrl: r.photoUrl ?? null,
         entity_verified: r.entity_verified,
         identity_verified: r.identity_verified,
         report: r.report
@@ -187,7 +188,20 @@ const App: React.FC = () => {
       case 'legal-hub': return <LegalHub />;
       case 'contact-us': return <ContactUs />;
       
-      case 'shared': return <ProofPortal record={selectedRecord || records[0]} onClose={() => { setActiveView('bgv-vault'); window.location.hash = ''; }} />;
+      case 'shared': {
+        const recordToDisplay = selectedRecord || records[0];
+        // Guard clause to prevent rendering without a record
+        if (!recordToDisplay) {
+            return (
+              <div className="flex flex-col items-center justify-center min-h-[500px] text-zinc-400">
+                <ShieldAlert size={48} className="mb-4 opacity-50" />
+                <p className="font-quantum uppercase tracking-widest">No Record Selected</p>
+                <button onClick={() => setActiveView('bgv-vault')} className="mt-6 text-sm text-emerald-500 hover:underline">Return to Vault</button>
+              </div>
+            );
+        }
+        return <ProofPortal record={recordToDisplay} onClose={() => { setActiveView('bgv-vault'); window.location.hash = ''; }} />;
+      }
       
       case 'settings': return (
         <div className={`p-10 rounded-[3rem] border shadow-sm animate-in fade-in duration-500 ${theme === 'onyx' ? 'bg-zinc-900 border-white/5' : 'bg-white border-emerald-50'}`}>

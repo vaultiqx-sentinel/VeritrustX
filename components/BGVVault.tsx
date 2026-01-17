@@ -1,6 +1,7 @@
+
 import React, { useState, useMemo } from 'react';
 import { 
-  ShieldCheck, CheckCircle2, AlertTriangle, Download, Search, 
+  CheckCircle2, AlertTriangle, Download, Search, 
   Globe, Fingerprint, Database, ArrowUpDown, 
   ChevronUp, ChevronDown, XCircle, RefreshCcw, Eye, Share2, FilterX, Loader2, Calendar
 } from 'lucide-react';
@@ -79,7 +80,7 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
   // --- 🔍 DEEP FILTERING ---
   const filteredRecords = useMemo(() => {
     return (records || []).filter(r => {
-      // 1. Text Search
+      // 1. Text Search (Global + Local)
       const searchStr = (searchFilter + ' ' + localSearch).toLowerCase().trim();
       const matchesSearch = 
         r.name?.toLowerCase().includes(searchStr) ||
@@ -292,7 +293,12 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
                           <div className={`w-16 h-16 rounded-2xl flex items-center justify-center p-0.5 border-2 overflow-hidden transition-all duration-500 shadow-sm shrink-0 ${
                             record.status === 'Verified' ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'
                           }`}>
-                            <img src={record.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} className="w-full h-full object-cover rounded-xl" alt={record.name} />
+                            <img 
+                              src={record.photoUrl ?? `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} 
+                              className="w-full h-full object-cover rounded-xl" 
+                              alt={record.name} 
+                              onError={(e) => { e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`; }}
+                            />
                           </div>
                           {/* Avatar Status Overlay */}
                           <div className={`absolute -bottom-2 -right-2 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center shadow-md ${

@@ -1,3 +1,4 @@
+
 export type VeritrustTheme = 'indigo' | 'emerald' | 'onyx';
 
 export type VerdictType = 'Verified' | 'Likely True' | 'Unverified' | 'Misleading' | 'False' | 'Flagged' | 'Failed';
@@ -15,7 +16,7 @@ export interface VaultRecord {
   trustScore: number;
   report?: string;
   created_at: string;
-  photoUrl?: string | null;
+  photoUrl?: string | null | undefined;
   entity_verified?: boolean;
   identity_verified?: boolean;
 }
