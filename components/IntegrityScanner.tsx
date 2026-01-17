@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
-  CheckCircle2, Loader2, Fingerprint, SearchCode, RefreshCw, Cpu
+  CheckCircle2, Loader2, Fingerprint, SearchCode, RefreshCw, Cpu, Terminal
 } from 'lucide-react';
 import { performQuantumAudit } from '../services/gemini';
 
@@ -12,23 +13,28 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
   const [profileData, setProfileData] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [scanStatus, setScanStatus] = useState(0);
+  const [logs, setLogs] = useState<string[]>([]);
 
-  const scanStatuses = [
-    "Initializing neural logic shards...",
-    "Hashing identity vectors...",
-    "Cross-referencing global registry nodes...",
-    "Scanning tenure logic flows...",
-    "Finalizing integrity dossier..."
-  ];
-
+  // Simulation logs for visual effect
   useEffect(() => {
     let interval: any;
     if (isAnalyzing) {
-      setScanStatus(0);
+      setLogs([]);
+      const simLogs = [
+        "Initializing neural logic shards...",
+        "Resolving entity vectors...",
+        "Cross-referencing timeline gaps...",
+        "Scanning semantic density...",
+        "Checking for LLM-generated patterns...",
+        "Finalizing forensic integrity dossier..."
+      ];
+      let i = 0;
       interval = setInterval(() => {
-        setScanStatus(prev => (prev + 1) % scanStatuses.length);
-      }, 1500);
+        if (i < simLogs.length) {
+          setLogs(prev => [...prev, simLogs[i]]);
+          i++;
+        }
+      }, 800);
     }
     return () => clearInterval(interval);
   }, [isAnalyzing]);
@@ -73,11 +79,11 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
               <textarea 
                 value={profileData}
                 onChange={(e) => setProfileData(e.target.value)}
-                placeholder="Paste Candidate CV snippets or LinkedIn Text here..."
-                className="w-full h-[400px] px-8 py-6 bg-zinc-50 border-2 border-zinc-100 rounded-[2.5rem] outline-none text-zinc-900 font-bold text-sm resize-none custom-scrollbar"
+                placeholder="Paste Candidate CV snippets or LinkedIn Text here for forensic analysis..."
+                className="w-full h-[400px] px-8 py-6 bg-zinc-50 border-2 border-zinc-100 rounded-[2.5rem] outline-none text-zinc-900 font-bold text-sm resize-none custom-scrollbar focus:border-indigo-500 transition-colors"
               />
               <div className="flex gap-4">
-                <button onClick={handleScan} disabled={isAnalyzing || !profileData} className="flex-1 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl">
+                <button onClick={handleScan} disabled={isAnalyzing || !profileData} className="flex-1 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl hover:scale-[1.02] transition-transform">
                   {isAnalyzing ? <Loader2 className="animate-spin" /> : 'EXECUTE NEURAL AUDIT'}
                 </button>
                 <button onClick={() => {setProfileData(''); setResult(null);}} className="p-5 bg-zinc-100 text-zinc-400 rounded-2xl hover:bg-zinc-200"><RefreshCw size={20} /></button>
@@ -86,14 +92,23 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
 
            <div className="space-y-6">
               {isAnalyzing ? (
-                <div className="h-full min-h-[500px] flex flex-col items-center justify-center space-y-8 bg-zinc-50 border border-zinc-100 rounded-[3rem] p-12 relative">
-                   <div className="relative"><div className="w-32 h-32 border-[6px] border-zinc-200 border-t-indigo-600 rounded-full animate-spin"></div><Fingerprint className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-600" size={40} /></div>
-                   <p className="text-zinc-900 font-black text-xl uppercase tracking-widest font-quantum">{scanStatuses[scanStatus]}</p>
+                <div className="h-full min-h-[500px] flex flex-col space-y-4 bg-zinc-950 border border-zinc-900 rounded-[3rem] p-10 relative overflow-hidden font-mono text-xs">
+                   <div className="flex items-center gap-2 text-emerald-500 mb-4">
+                      <Terminal size={14} />
+                      <span className="uppercase font-black tracking-widest">Neural Kernel Active</span>
+                   </div>
+                   <div className="space-y-2 relative z-10">
+                      {logs.map((log, i) => (
+                        <p key={i} className="text-emerald-400/80 animate-in slide-in-from-left-2">&gt; {log}</p>
+                      ))}
+                      <span className="inline-block w-2 h-4 bg-emerald-500 animate-pulse"></span>
+                   </div>
+                   <Fingerprint className="absolute bottom-10 right-10 text-emerald-500/10" size={120} />
                 </div>
               ) : result ? (
                 <div className="h-full flex flex-col">
                    <div className="p-8 bg-zinc-900 rounded-[2.5rem] text-white overflow-hidden relative border border-white/10 shadow-2xl flex-1 flex flex-col">
-                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4"><pre className="text-emerald-400 text-xs leading-relaxed whitespace-pre-wrap font-mono italic p-6 bg-black/50 rounded-2xl">{result}</pre></div>
+                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4"><pre className="text-emerald-400 text-xs leading-relaxed whitespace-pre-wrap font-mono italic p-6 bg-black/50 rounded-2xl border border-white/5">{result}</pre></div>
                       <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center"><div className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500" /><p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Protocol Stored in Vault</p></div></div>
                    </div>
                 </div>

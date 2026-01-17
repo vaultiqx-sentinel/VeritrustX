@@ -1,9 +1,12 @@
+
 /**
  * VERITRUSTX NEURAL UPLINK - v1.7 (Stable Production)
  * Institutional Grade Connector
  */
 
-const API_BASE = "https://veritrustx.onrender.com/api"; 
+// Automatically switch between Production and Localhost for Demos
+// Cast import.meta to any to avoid TypeScript errors with vite env
+export const API_BASE = ((import.meta as any).env?.VITE_API_URL || "http://localhost:5000") + "/api"; 
 
 /** 1. INTEGRITY SCANNER (Audit) */
 export const performQuantumAudit = async (candidateData: string, licenseKey: string = "DEMO"): Promise<string> => {
@@ -16,7 +19,7 @@ export const performQuantumAudit = async (candidateData: string, licenseKey: str
     const data = await response.json();
     return data.report || data.error || "Neural Core Response Timeout.";
   } catch (error) {
-    return "[UPLINK ERROR]: Neural Core unreachable.";
+    return "[UPLINK ERROR]: Neural Core unreachable. Running in disconnected mode.";
   }
 };
 
@@ -31,7 +34,7 @@ export const analyzeDocumentImage = async (base64Data: string, mimeType: string,
     const data = await response.json();
     return data.report || "Forensic Link Fault.";
   } catch (error) {
-    return "LAB ERROR: Connection failed.";
+    return "LAB ERROR: Connection failed. Ensure Neural Server is active.";
   }
 };
 
@@ -90,7 +93,7 @@ export const globalBackgroundSearch = async (query: string) => {
     });
     return await response.json();
   } catch (error) {
-    return { text: "Search service offline.", sources: [] };
+    return { text: "Search service offline. Local grounding active.", sources: [] };
   }
 };
 

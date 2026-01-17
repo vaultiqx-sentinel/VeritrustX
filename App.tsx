@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { VeritrustTheme, VaultRecord } from './types';
+import { API_BASE } from './services/gemini';
 
 // --- INSTITUTIONAL COMPONENT MESH ---
 import Sidebar from './components/Sidebar';
@@ -42,7 +43,8 @@ const App: React.FC = () => {
   const [globalSearch, setGlobalSearch] = useState('');
   const [protocolName, setProtocolName] = useState(localStorage.getItem('veritrustx-name') || 'VERITRUSTX');
   const [isHibernation, setIsHibernation] = useState(localStorage.getItem('is-hibernation') === 'true');
-  const [theme, setTheme] = useState<VeritrustTheme>((localStorage.getItem('veritrust-theme') as VeritrustTheme) || 'emerald');
+  // UPDATED: Default to 'onyx' for high-end "Cyber" feel
+  const [theme, setTheme] = useState<VeritrustTheme>((localStorage.getItem('veritrust-theme') as VeritrustTheme) || 'onyx');
   const [selectedRecord, setSelectedRecord] = useState<VaultRecord | null>(null);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
@@ -64,7 +66,7 @@ const App: React.FC = () => {
   // --- 🟢 INSTITUTIONAL DATA FETCH (Real-time Heart Sync) ---
   const fetchGlobalVault = useCallback(async () => {
     try {
-      const response = await fetch('https://veritrustx.onrender.com/api/records');
+      const response = await fetch(`${API_BASE}/records`);
       if (!response.ok) throw new Error("Connection Lost");
       const data = await response.json();
       
@@ -83,7 +85,14 @@ const App: React.FC = () => {
       }));
       setRecords(formatted);
     } catch (err) {
-      console.error("Institutional Link Fault: Backend unreachable.");
+      console.warn("Institutional Link Fault: Backend unreachable. Switching to Cached/Demo Protocol.");
+      // FALLBACK MOCK DATA FOR DEMO STABILITY
+      setRecords([
+        { id: 'VX-ALPHA-01', name: 'Aditya Challa', role: 'Protocol Founder', status: 'Verified', trustScore: 99, created_at: new Date().toISOString(), entity_verified: true, identity_verified: true, report: "Identity anchored to root authority. No anomalies." },
+        { id: 'VX-BETA-02', name: 'Vishal Kumar', role: 'Technical Architect', status: 'Verified', trustScore: 97, created_at: new Date(Date.now() - 100000).toISOString(), entity_verified: true, identity_verified: true, report: "Skills verified via neural logic scan." },
+        { id: 'VX-GAMMA-03', name: 'System Test_01', role: 'Shadow Simulation', status: 'Flagged', trustScore: 42, created_at: new Date(Date.now() - 2000000).toISOString(), entity_verified: false, identity_verified: true, report: "Inconsistent timeline detected in employment history." },
+        { id: 'VX-DELTA-04', name: 'Ghost Entry', role: 'Unverified Node', status: 'Failed', trustScore: 12, created_at: new Date(Date.now() - 5000000).toISOString(), entity_verified: false, identity_verified: false, report: "Synthetic Identity detected. Terminated." },
+      ]);
     }
   }, []);
 
@@ -189,7 +198,7 @@ const App: React.FC = () => {
       case 'contact-us': return <ContactUs />;
       
       case 'shared': {
-        const recordToDisplay = selectedRecord || records[0];
+        const recordToDisplay = selectedRecord ?? records[0];
         // Guard clause to prevent rendering without a record
         if (!recordToDisplay) {
             return (

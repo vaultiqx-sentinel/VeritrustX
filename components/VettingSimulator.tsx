@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { ShieldCheck, Cpu, Loader2, Fingerprint, Activity, FileUp, Binary, ScanFace, Gauge, FileText } from 'lucide-react';
 import { performQuantumAudit } from '../services/gemini';
@@ -133,7 +134,7 @@ const VettingSimulator: React.FC = () => {
                       </div>
                       
                       <div className="bg-white border border-slate-200 rounded-xl px-6 py-3 shadow-sm min-w-[240px]">
-                        <p className="text-slate-600 text-xs font-bold animate-in fade-in slide-in-from-bottom-1 duration-500 key={loadingStep}">
+                        <p key={loadingStep} className="text-slate-600 text-xs font-bold animate-in fade-in slide-in-from-bottom-1 duration-500">
                           {loadingSteps[loadingStep]}
                         </p>
                       </div>
