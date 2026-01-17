@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  CheckCircle2, Loader2, Fingerprint, SearchCode, RefreshCw, Cpu, Terminal
+  CheckCircle2, Loader2, Fingerprint, SearchCode, RefreshCw, Cpu, Terminal, FileCheck, Hash
 } from 'lucide-react';
 import { performQuantumAudit } from '../services/gemini';
 
@@ -13,6 +13,7 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
   const [profileData, setProfileData] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const [contentHash, setContentHash] = useState<string | null>(null);
   const [logs, setLogs] = useState<string[]>([]);
 
   // Simulation logs for visual effect
@@ -25,7 +26,7 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
         "Resolving entity vectors...",
         "Cross-referencing timeline gaps...",
         "Scanning semantic density...",
-        "Checking for LLM-generated patterns...",
+        "Generating SHA-256 Content Signature...",
         "Finalizing forensic integrity dossier..."
       ];
       let i = 0;
@@ -39,13 +40,27 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
     return () => clearInterval(interval);
   }, [isAnalyzing]);
 
+  // 🔒 SHA-256 GENERATOR FOR TEXT CONTENT
+  const generateTextHash = async (text: string) => {
+    const msgBuffer = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+  };
+
   const handleScan = async () => {
     if (!profileData || profileData.length < 5) return;
     setIsAnalyzing(true);
     setResult(null);
+    setContentHash(null);
+
+    // Generate Hash
+    const hash = await generateTextHash(profileData);
+
     try {
       const report = await performQuantumAudit(profileData, "VX-DEMO-KEY");
       setResult(report);
+      setContentHash(hash);
       
       const scoreMatch = report.match(/(\d+)%/);
       const score = scoreMatch ? parseInt(scoreMatch[1]) : 75;
@@ -86,7 +101,7 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
                 <button onClick={handleScan} disabled={isAnalyzing || !profileData} className="flex-1 py-5 bg-zinc-900 text-white font-black rounded-2xl flex items-center justify-center gap-3 disabled:opacity-50 shadow-xl hover:scale-[1.02] transition-transform">
                   {isAnalyzing ? <Loader2 className="animate-spin" /> : 'EXECUTE NEURAL AUDIT'}
                 </button>
-                <button onClick={() => {setProfileData(''); setResult(null);}} className="p-5 bg-zinc-100 text-zinc-400 rounded-2xl hover:bg-zinc-200"><RefreshCw size={20} /></button>
+                <button onClick={() => {setProfileData(''); setResult(null); setContentHash(null);}} className="p-5 bg-zinc-100 text-zinc-400 rounded-2xl hover:bg-zinc-200"><RefreshCw size={20} /></button>
               </div>
            </div>
 
@@ -108,7 +123,17 @@ const IntegrityScanner: React.FC<IntegrityScannerProps> = ({ onAuditComplete }) 
               ) : result ? (
                 <div className="h-full flex flex-col">
                    <div className="p-8 bg-zinc-900 rounded-[2.5rem] text-white overflow-hidden relative border border-white/10 shadow-2xl flex-1 flex flex-col">
-                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4"><pre className="text-emerald-400 text-xs leading-relaxed whitespace-pre-wrap font-mono italic p-6 bg-black/50 rounded-2xl border border-white/5">{result}</pre></div>
+                      <div className="flex-1 overflow-y-auto custom-scrollbar pr-4">
+                        {contentHash && (
+                            <div className="mb-6 p-4 bg-white/5 rounded-2xl border border-white/5 space-y-2">
+                                <div className="flex items-center gap-2 text-indigo-400 text-[9px] font-black uppercase tracking-widest">
+                                    <Hash size={12} /> Content Integrity Hash (SHA-256)
+                                </div>
+                                <p className="font-mono text-[10px] text-zinc-400 break-all leading-relaxed">{contentHash}</p>
+                            </div>
+                        )}
+                        <pre className="text-emerald-400 text-xs leading-relaxed whitespace-pre-wrap font-mono italic p-6 bg-black/50 rounded-2xl border border-white/5">{result}</pre>
+                      </div>
                       <div className="mt-6 pt-6 border-t border-white/10 flex justify-between items-center"><div className="flex items-center gap-2"><CheckCircle2 size={14} className="text-emerald-500" /><p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Protocol Stored in Vault</p></div></div>
                    </div>
                 </div>

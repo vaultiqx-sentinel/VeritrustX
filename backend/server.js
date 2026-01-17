@@ -1,3 +1,4 @@
+
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -15,8 +16,8 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 
 // 1. Initialize Neural Core & Database Mesh
-// Using the new SDK pattern
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Using the new SDK pattern with standard API_KEY
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 /**
@@ -28,14 +29,47 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY
 // 1. PROXY GUARD: Biometric Uplink
 app.post('/api/proxy-audit', async (req, res) => {
     try {
-        const { isCheatingDetected, gazeDirection, candidateId, name, role } = req.body;
+        const { 
+            isCheatingDetected, 
+            gazeDirection, 
+            candidateId, 
+            name, 
+            role, 
+            lipSyncStatus, 
+            voiceIntegrity, 
+            gazeViolationCount 
+        } = req.body;
+        
         console.log(`>>> BIOMETRIC AUDIT: ${name} [${candidateId}]`);
+        console.log(`    Signals: Gaze(${gazeDirection}) | LipSync(${lipSyncStatus}) | Voice(${voiceIntegrity})`);
 
-        const status = isCheatingDetected ? "TERMINATED" : "GROUNDED";
-        const trustScore = isCheatingDetected ? 12 : 98;
-        const verdict = isCheatingDetected 
-            ? `IDENTITY FRACTURE: Gaze shifted ${gazeDirection}. Shadow AI suspected.` 
-            : "IDENTITY VERIFIED: Biometric continuity grounded.";
+        // --- MULTI-FACTOR FRAUD LOGIC ---
+        // We aggregate visual + audio signals to determine the final status
+        const visualFraud = isCheatingDetected || gazeViolationCount > 3;
+        const audioFraud = lipSyncStatus === 'DESYNC' || voiceIntegrity === 'SYNTHETIC_SUSPECT';
+        
+        const isCompromised = visualFraud || audioFraud;
+        const status = isCompromised ? "TERMINATED" : "Verified";
+        
+        // Calculate dynamic score
+        let trustScore = 98;
+        if (visualFraud) trustScore -= 40;
+        if (audioFraud) trustScore -= 45;
+        if (gazeViolationCount > 0) trustScore -= (gazeViolationCount * 5);
+        trustScore = Math.max(0, trustScore);
+
+        // Build Forensic Verdict Details
+        let verdictDetails = [];
+        if (gazeDirection !== 'CENTER') verdictDetails.push(`Active Gaze Deviation (${gazeDirection})`);
+        if (gazeViolationCount > 2) verdictDetails.push(`Frequent Focus Loss (${gazeViolationCount} events)`);
+        if (lipSyncStatus === 'DESYNC') verdictDetails.push("Deepfake Lip-Sync Anomaly Detected");
+        if (voiceIntegrity === 'SYNTHETIC_SUSPECT') verdictDetails.push("Synthetic/AI Voice Modulation Detected");
+
+        const verdict = isCompromised 
+            ? `IDENTITY FRACTURE: ${verdictDetails.join(', ') || 'Multi-Factor Biometric Failure'}` 
+            : "IDENTITY VERIFIED: Multi-factor biometrics (Visual + Audio) grounded.";
+
+        const recommendation = isCompromised ? "FAIL - IMMEDIATE ESCALATION" : "PROCEED";
 
         // Save to Vault
         const { error } = await supabase.from('audit_records').insert([{ 
@@ -44,14 +78,21 @@ app.post('/api/proxy-audit', async (req, res) => {
             status: status, 
             trustScore: trustScore, 
             report: verdict,
-            identity_verified: !isCheatingDetected,
+            identity_verified: !isCompromised,
             entity_verified: true,
             created_at: new Date().toISOString()
         }]);
 
         if (error) console.error("Vault Insert Error:", error);
 
-        res.json({ status, score: trustScore, verdict });
+        res.json({ 
+            status, 
+            score: trustScore, 
+            verdict, 
+            details: isCompromised ? verdictDetails.join(', ') : "Neural Mesh Integrity Confirmed.",
+            recommendation
+        });
+
     } catch (err) { 
         console.error(err);
         res.status(500).json({ error: err.message }); 
@@ -74,12 +115,12 @@ app.post('/api/forensic-analyze', async (req, res) => {
             2. LOGIC CHECK: Are tenure dates and roles consistent?
             3. ENTITY SKEPTICISM: Is this a known shell entity?
             
-            OUTPUT: A detailed forensic report text starting with a clear VERDICT (GROUNDED or TERMINATED).
+            OUTPUT: A strict, forensic report in uppercase technical style. Start with "VERDICT: GROUNDED" or "VERDICT: FLAGGED".
         `;
 
-        // Use new SDK with Gemini 3 Flash for image analysis
+        // Use new SDK with Gemini 2.5 Flash for image analysis
         const response = await ai.models.generateContent({
-            model: 'gemini-3-flash-preview',
+            model: 'gemini-2.5-flash-image',
             contents: {
                 parts: [
                     { inlineData: { data: base64Data, mimeType: mimeType } },
@@ -115,8 +156,19 @@ app.post('/api/forensic-analyze', async (req, res) => {
 app.post('/api/audit', async (req, res) => {
     try {
         const { candidateData } = req.body;
-        const prompt = `Perform a high-stakes institutional background check audit on this text profile. 
-        Identify timeline gaps, skill mismatches, and potential embellishments.
+        const prompt = `
+        IDENTITY AUDIT PROTOCOL v9.0
+        
+        Analyze the following candidate text (Resume/CV) for FRAUDULENT PATTERNS.
+        
+        Look for:
+        1. Timeline Fractures (Dates that don't match logic).
+        2. Skill Stuffing (Keywords without context).
+        3. Semantic Embellishment (Vague corporate jargon).
+        
+        Return a FORENSIC DOSSIER. 
+        Start with a "TRUST SCORE: XX%".
+        
         Profile Data: "${candidateData.substring(0, 5000)}"`;
         
         // Use new SDK with Gemini 3 Pro for complex text analysis
@@ -149,10 +201,10 @@ app.get('/api/records', async (req, res) => {
 app.post('/api/global-search', async (req, res) => {
     const { query } = req.body;
     try {
-        // Use Gemini 3 Pro for search tasks (simulated grounding via text prompt for now)
+        // Use Gemini 3 Pro for search tasks
         const response = await ai.models.generateContent({
             model: 'gemini-3-pro-preview',
-            contents: `Verify existence and reputation for: ${query}. Return sources if possible.`
+            contents: `Conduct a background verification check on: ${query}. Return sources if possible.`
         });
         res.json({ text: response.text, sources: [] });
     } catch (e) {

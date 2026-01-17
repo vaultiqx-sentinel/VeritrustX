@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Camera, Upload, Fingerprint, RefreshCcw, X, Scan, AlertTriangle, ScanLine, 
-  Zap, Loader2
+  Zap, Loader2, Hash, Binary
 } from 'lucide-react';
 import { analyzeDocumentImage, performQuantumAudit } from '../services/gemini';
 
@@ -18,6 +18,7 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [candidateName, setCandidateName] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [digitalDNA, setDigitalDNA] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -36,6 +37,7 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
       setStream(mediaStream);
       setIsCameraActive(true);
       setResult(null);
+      setDigitalDNA(null);
     } catch (err) {
       alert("Institutional Node Error: Please enable camera permissions.");
     }
@@ -45,6 +47,28 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
     if (stream) stream.getTracks().forEach(track => track.stop());
     setStream(null);
     setIsCameraActive(false);
+  };
+
+  const generateSHA256 = async (base64Input: string) => {
+    try {
+      // Decode base64 to binary
+      const raw = window.atob(base64Input);
+      const rawLength = raw.length;
+      const array = new Uint8Array(new ArrayBuffer(rawLength));
+      for(let i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+      }
+      
+      // Calculate SHA-256
+      const hashBuffer = await crypto.subtle.digest('SHA-256', array);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+      
+      setDigitalDNA(hashHex.toUpperCase());
+    } catch (e) {
+      console.error("SHA-256 Generation Failed", e);
+      setDigitalDNA("ENCRYPTION-ENGINE-ERROR");
+    }
   };
 
   const capturePhoto = () => {
@@ -58,6 +82,7 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
         setImage(dataUrl);
+        generateSHA256(dataUrl.split(',')[1]);
         stopCamera();
       }
     }
@@ -68,8 +93,10 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result as string);
+        const res = reader.result as string;
+        setImage(res);
         setResult(null);
+        generateSHA256(res.split(',')[1]);
       };
       reader.readAsDataURL(file);
     }
@@ -141,10 +168,20 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
                      </div>
                    </>
                  ) : image ? (
-                   <>
+                   <div className="relative w-full h-full">
                      <img src={image} className="w-full h-full object-contain p-6" alt="Preview" />
-                     <button onClick={() => setImage(null)} className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"><RefreshCcw className="text-white" size={48} /></button>
-                   </>
+                     {digitalDNA && (
+                        <div className="absolute bottom-6 left-6 right-6 bg-slate-950/80 backdrop-blur-md p-4 rounded-2xl border border-red-500/30">
+                           <div className="flex items-center gap-2 mb-2 text-red-500 font-bold uppercase tracking-widest text-[9px]">
+                              <Hash size={12} /> Digital DNA (SHA-256)
+                           </div>
+                           <p className="font-mono text-[9px] text-red-400/80 break-all leading-relaxed tracking-wider">
+                              {digitalDNA}
+                           </p>
+                        </div>
+                     )}
+                     <button onClick={() => { setImage(null); setDigitalDNA(null); }} className="absolute inset-0 flex items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity"><RefreshCcw className="text-white" size={48} /></button>
+                   </div>
                  ) : (
                    <div className="text-center space-y-8 p-12">
                       <div className="flex gap-6 justify-center">
@@ -169,6 +206,17 @@ const ForensicLab: React.FC<ForensicLabProps> = ({ onVerdict }) => {
                       <div className="flex items-center gap-3"><Fingerprint className="text-red-500" /><h4 className="text-white font-black uppercase">Forensic Summary</h4></div>
                       <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] font-black text-emerald-500 uppercase tracking-widest">Analysis Complete</div>
                    </div>
+                   
+                   {/* Evidence Chain Block */}
+                   {digitalDNA && (
+                     <div className="p-4 bg-white/5 rounded-2xl border border-white/5 flex flex-col gap-2">
+                        <div className="flex items-center gap-2 text-slate-400 text-[9px] font-black uppercase tracking-widest">
+                           <Binary size={12} /> Evidence Chain ID
+                        </div>
+                        <p className="font-mono text-[10px] text-emerald-500 break-all">{digitalDNA}</p>
+                     </div>
+                   )}
+
                    <div className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-mono bg-white/5 p-8 rounded-3xl border border-white/5 italic">{result}</div>
                 </div>
               ) : (
