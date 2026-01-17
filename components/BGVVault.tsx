@@ -1,13 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import { 
   ShieldCheck, CheckCircle2, AlertTriangle, Download, Search, 
-  Globe, Fingerprint, Database, Binary, ArrowUpDown, User, 
-  ChevronUp, ChevronDown, XCircle, AlertCircle, MoreHorizontal, 
-  RefreshCcw, Eye, Share2, FilterX, Loader2
+  Globe, Fingerprint, Database, ArrowUpDown, 
+  ChevronUp, ChevronDown, XCircle, RefreshCcw, Eye, Share2, FilterX, Loader2, Calendar
 } from 'lucide-react';
-import { VaultRecord } from '../App';
+import { VaultRecord } from '../types';
 
-// Define the interface to match App.tsx exactly
 export interface BGVVaultProps {
   searchFilter?: string;
   records?: VaultRecord[];
@@ -26,6 +24,7 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
   });
   const [activeStatusFilter, setActiveStatusFilter] = useState<StatusFilter>('All');
   const [localSearch, setLocalSearch] = useState('');
+  const [dateRange, setDateRange] = useState<{start: string, end: string}>({ start: '', end: '' });
   const [isResyncing, setIsResyncing] = useState(false);
 
   // --- 🟢 REAL CSV EXPORT ENGINE ---
@@ -80,17 +79,28 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
   // --- 🔍 DEEP FILTERING ---
   const filteredRecords = useMemo(() => {
     return (records || []).filter(r => {
+      // 1. Text Search
       const searchStr = (searchFilter + ' ' + localSearch).toLowerCase().trim();
       const matchesSearch = 
         r.name?.toLowerCase().includes(searchStr) ||
         r.role?.toLowerCase().includes(searchStr) ||
         r.id?.toLowerCase().includes(searchStr);
       
+      // 2. Status Filter
       const matchesStatus = activeStatusFilter === 'All' || r.status === activeStatusFilter;
       
-      return matchesSearch && matchesStatus;
+      // 3. Date Range Filter
+      let matchesDate = true;
+      if (dateRange.start) {
+        matchesDate = matchesDate && new Date(r.created_at) >= new Date(dateRange.start);
+      }
+      if (dateRange.end) {
+        matchesDate = matchesDate && new Date(r.created_at) <= new Date(dateRange.end);
+      }
+      
+      return matchesSearch && matchesStatus && matchesDate;
     });
-  }, [searchFilter, localSearch, records, activeStatusFilter]);
+  }, [searchFilter, localSearch, records, activeStatusFilter, dateRange]);
 
   // --- 🔃 ADVANCED SORTING ---
   const sortedRecords = useMemo(() => {
@@ -117,6 +127,13 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
     if (sortConfig.key !== column) return <ArrowUpDown size={12} className="opacity-30 ml-1" />;
     return sortConfig.direction === 'asc' ? <ChevronUp size={12} className="ml-1 text-emerald-600" /> : <ChevronDown size={12} className="ml-1 text-emerald-600" />;
   };
+
+  const getStatusBorder = (status: string) => {
+     if (status === 'Verified') return 'border-l-4 border-l-emerald-500 hover:border-emerald-300';
+     if (status === 'Flagged') return 'border-l-4 border-l-amber-500 hover:border-amber-300';
+     if (status === 'Failed') return 'border-l-4 border-l-rose-500 hover:border-rose-300';
+     return 'hover:border-zinc-300';
+  }
 
   const StatusBadge = ({ status }: { status: VaultRecord['status'] }) => {
     const configs = {
@@ -174,13 +191,13 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
       </div>
 
       {/* 🔍 Universal Filter Bar */}
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-4 bg-white p-3 border border-zinc-100 rounded-[2.5rem] shadow-sm">
-         <div className="flex bg-zinc-50 p-1 rounded-2xl w-full lg:w-auto">
+      <div className="flex flex-col xl:flex-row items-center justify-between gap-4 bg-white p-3 border border-zinc-100 rounded-[2.5rem] shadow-sm">
+         <div className="flex bg-zinc-50 p-1 rounded-2xl w-full xl:w-auto overflow-x-auto">
             {(['All', 'Verified', 'Flagged', 'Failed'] as StatusFilter[]).map(filter => (
                <button
                   key={filter}
                   onClick={() => setActiveStatusFilter(filter)}
-                  className={`flex-1 lg:flex-none px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 xl:flex-none px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                      activeStatusFilter === filter 
                      ? 'bg-zinc-900 text-white shadow-sm' 
                      : 'text-zinc-400 hover:text-zinc-600'
@@ -189,6 +206,29 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
                   {filter}
                </button>
             ))}
+         </div>
+
+         <div className="flex items-center gap-2 px-2 w-full xl:w-auto bg-zinc-50 p-1 rounded-2xl border border-zinc-100/50">
+            <div className="relative flex-1">
+                <Calendar size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"/>
+                <input 
+                    type="date" 
+                    value={dateRange.start}
+                    onChange={(e) => setDateRange({...dateRange, start: e.target.value})}
+                    className="pl-9 pr-2 py-2.5 bg-transparent rounded-xl text-xs font-bold outline-none text-zinc-600 w-full"
+                    placeholder="Start"
+                />
+            </div>
+            <span className="text-zinc-300 font-bold">-</span>
+            <div className="relative flex-1">
+                <input 
+                    type="date" 
+                    value={dateRange.end}
+                    onChange={(e) => setDateRange({...dateRange, end: e.target.value})}
+                    className="px-2 py-2.5 bg-transparent rounded-xl text-xs font-bold outline-none text-zinc-600 w-full"
+                    placeholder="End"
+                />
+            </div>
          </div>
          
          <div className="flex flex-1 items-center gap-3 px-4 w-full">
@@ -202,9 +242,9 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
                   className="w-full pl-12 pr-4 py-3 bg-zinc-50 border-none rounded-2xl text-xs font-bold outline-none text-zinc-900"
                />
             </div>
-            { (localSearch || activeStatusFilter !== 'All') && (
+            { (localSearch || activeStatusFilter !== 'All' || dateRange.start || dateRange.end) && (
                <button 
-                  onClick={() => { setLocalSearch(''); setActiveStatusFilter('All'); }}
+                  onClick={() => { setLocalSearch(''); setActiveStatusFilter('All'); setDateRange({start:'', end:''}); }}
                   className="p-3 text-zinc-400 hover:text-rose-500 transition-colors"
                >
                   <FilterX size={18} />
@@ -240,18 +280,31 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
 
         <div className="divide-y divide-zinc-50 p-6 space-y-4">
            {sortedRecords.length > 0 ? sortedRecords.map((record, i) => (
-             <div key={i} className="bg-white p-6 rounded-[2.5rem] border border-zinc-100 hover:border-emerald-200 transition-all group">
+             <div 
+                key={i} 
+                onClick={() => onShareRecord?.(record)}
+                className={`bg-white p-6 rounded-[2.5rem] border border-zinc-100 transition-all group cursor-pointer shadow-sm hover:shadow-xl hover:-translate-y-1 ${getStatusBorder(record.status)}`}
+             >
                 <div className="grid grid-cols-12 gap-4 items-center relative z-10">
                    {/* Candidate Avatar & Name */}
                    <div className="col-span-5 lg:col-span-4 flex items-center gap-5">
-                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center p-0.5 border-2 overflow-hidden transition-all duration-500 shadow-sm shrink-0 ${
-                        record.status === 'Verified' ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'
-                      }`}>
-                         <img src={record.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} className="w-full h-full object-cover rounded-xl" alt={record.name} />
+                      <div className="relative">
+                          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center p-0.5 border-2 overflow-hidden transition-all duration-500 shadow-sm shrink-0 ${
+                            record.status === 'Verified' ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'
+                          }`}>
+                            <img src={record.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} className="w-full h-full object-cover rounded-xl" alt={record.name} />
+                          </div>
+                          {/* Avatar Status Overlay */}
+                          <div className={`absolute -bottom-2 -right-2 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center shadow-md ${
+                              record.status === 'Verified' ? 'bg-emerald-500 text-white' : 
+                              record.status === 'Flagged' ? 'bg-amber-500 text-white' : 'bg-rose-500 text-white'
+                          }`}>
+                            {record.status === 'Verified' ? <CheckCircle2 size={12} /> : record.status === 'Flagged' ? <AlertTriangle size={12} /> : <XCircle size={12} />}
+                          </div>
                       </div>
                       <div className="overflow-hidden">
                          <h3 className="text-xl font-black text-zinc-900 truncate">{record.name}</h3>
-                         <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mt-1">UUID: {record.id.slice(0, 12)}</p>
+                         <p className="text-[8px] font-black text-zinc-400 uppercase tracking-widest mt-1 group-hover:text-emerald-600 transition-colors">UUID: {record.id.slice(0, 12)}</p>
                       </div>
                    </div>
 
@@ -294,8 +347,8 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
 
                    {/* Quick Action Buttons */}
                    <div className="col-span-12 xl:col-span-1 mt-4 xl:mt-0 flex xl:justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => onShareRecord?.(record)} className="p-3 bg-zinc-900 text-white rounded-xl hover:bg-emerald-600 transition-colors shadow-lg"><Eye size={16} /></button>
-                      <button onClick={() => { window.location.hash = `#/proof/${record.id}`; }} className="p-3 bg-zinc-100 text-zinc-500 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all"><Share2 size={16} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); onShareRecord?.(record); }} className="p-3 bg-zinc-900 text-white rounded-xl hover:bg-emerald-600 transition-colors shadow-lg"><Eye size={16} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); window.location.hash = `#/proof/${record.id}`; }} className="p-3 bg-zinc-100 text-zinc-500 rounded-xl hover:bg-emerald-50 hover:text-emerald-600 transition-all"><Share2 size={16} /></button>
                    </div>
                 </div>
              </div>

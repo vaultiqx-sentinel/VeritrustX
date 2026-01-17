@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShieldCheck, Search, AlertTriangle, CheckCircle2, FileText, Cpu, Zap, Loader2, Fingerprint, Database, Globe, Binary, Camera, ScanFace, Gauge, Activity, Upload, FileUp } from 'lucide-react';
-import { performQuantumAudit } from '../src/services/geminiService';
+import { ShieldCheck, Cpu, Loader2, Fingerprint, Activity, FileUp, Binary, ScanFace, Gauge, FileText } from 'lucide-react';
+import { performQuantumAudit } from '../services/gemini';
 
 const VettingSimulator: React.FC = () => {
   const [resume, setResume] = useState('');
@@ -37,8 +37,6 @@ const VettingSimulator: React.FC = () => {
 
     const reader = new FileReader();
     
-    // For simplicity in a simulator, we handle text files directly.
-    // In a production environment, we would use a library like pdfjs or mammoth.
     reader.onload = (event) => {
       const content = event.target?.result;
       if (typeof content === 'string') {
@@ -49,7 +47,6 @@ const VettingSimulator: React.FC = () => {
     if (file.type === "text/plain") {
       reader.readAsText(file);
     } else {
-      // Mock parsing for non-text files to demonstrate the flow
       setResume(`[PARSED CONTENT FROM ${file.name}]\n\nCandidate Name: Simulated Applicant\nRole: Lead System Architect\nExperience: 12 Years\n\nFull deconstruction follows in the forensic report...`);
     }
   };
@@ -59,7 +56,7 @@ const VettingSimulator: React.FC = () => {
     setIsAnalyzing(true);
     setRawResponse(null);
     try {
-      const result = await performQuantumAudit(resume);
+      const result = await performQuantumAudit(resume, "SIMULATION-KEY");
       setRawResponse(result);
     } catch (error: any) {
       console.error(error);
@@ -70,7 +67,7 @@ const VettingSimulator: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div className="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
         <div className="flex items-center gap-4 mb-8">
            <div className="p-4 bg-orange-600 rounded-2xl text-white shadow-lg"><Cpu size={28} /></div>

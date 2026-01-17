@@ -1,6 +1,6 @@
 /**
  * VERITRUSTX NEURAL UPLINK - v1.7 (Stable Production)
- * Corrected members to resolve ResourceLedger and ERP errors.
+ * Institutional Grade Connector
  */
 
 const API_BASE = "https://veritrustx.onrender.com/api"; 
@@ -50,7 +50,7 @@ export const executeBusinessDirective = async (directive: string, erpState: stri
   }
 };
 
-/** 4. RESOURCE LEDGER (Optimization) - THE MISSING MEMBER */
+/** 4. RESOURCE LEDGER (Optimization) */
 export const optimizeResources = async (resourcesJson: string): Promise<string> => {
   try {
     const response = await fetch(`${API_BASE}/optimize-resources`, {

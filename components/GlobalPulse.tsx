@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Globe, Search, Link2, ExternalLink, Loader2, Info, CheckCircle, Database, Network, Target } from 'lucide-react';
-import { globalBackgroundSearch } from '../src/services/geminiService';
+import { Search, Loader2, Database, Network, Target, Globe, CheckCircle, Link2, ExternalLink, Info } from 'lucide-react';
+import { globalBackgroundSearch } from '../services/gemini';
 
 const GlobalPulse: React.FC = () => {
   const [query, setQuery] = useState('');
@@ -21,49 +21,25 @@ const GlobalPulse: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
+    <div className="space-y-8 animate-in fade-in duration-700 pb-20">
       <div className="bg-white p-10 rounded-[3rem] border border-zinc-100 shadow-sm relative overflow-hidden">
         <div className="flex items-center gap-4 mb-10">
-           <div className="p-4 accent-bg rounded-2xl text-white shadow-lg">
-             <Globe size={28} />
-           </div>
-           <div>
-              <h3 className="text-2xl font-black text-zinc-900 font-quantum">Global <span className="accent-text">Pulse</span> Grounding</h3>
-              <p className="text-sm text-zinc-500 font-medium">Verify public professional trace via live Institutional Search integration.</p>
-           </div>
+           <div className="p-4 accent-bg rounded-2xl text-white shadow-lg"><Network size={28} /></div>
+           <div><h3 className="text-2xl font-black text-zinc-900 font-quantum">Universal <span className="accent-text">Trust</span> Protocol</h3><p className="text-sm text-zinc-500 font-medium">Global grounding against public & registry traces.</p></div>
         </div>
 
         <div className="flex gap-4 mb-10">
            <div className="relative flex-1">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400" size={20} />
-              <input 
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="e.g. 'Jane Doe Senior AI Engineer Amazon 2021 Project X'"
-                className="w-full pl-16 pr-6 py-5 bg-zinc-50 border border-zinc-200 rounded-2xl focus:accent-border outline-none transition-all text-zinc-900 font-bold"
-              />
+              <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSearch()} placeholder="e.g. 'Jane Doe Senior AI Engineer'" className="w-full pl-16 pr-6 py-5 bg-zinc-50 border border-zinc-200 rounded-2xl focus:accent-border outline-none font-bold text-zinc-900" />
            </div>
-           <button 
-             onClick={handleSearch}
-             disabled={isLoading || !query}
-             className="px-8 accent-bg text-white font-black rounded-2xl hover:brightness-110 transition-all flex items-center gap-2 disabled:opacity-50 shadow-lg"
-           >
-              {isLoading ? <Loader2 className="animate-spin" /> : <Database size={18} />}
-              {isLoading ? 'Grounding...' : 'Verify Trace'}
-           </button>
+           <button onClick={handleSearch} disabled={isLoading || !query} className="px-8 accent-bg text-white font-black rounded-2xl flex items-center gap-2 disabled:opacity-50 shadow-lg">{isLoading ? <Loader2 className="animate-spin" /> : <Database size={18} />}{isLoading ? 'Grounding...' : 'Verify Trace'}</button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
            <div className="lg:col-span-2 space-y-6">
               {isLoading ? (
-                <div className="h-80 flex flex-col items-center justify-center bg-zinc-50 rounded-[3rem] border border-zinc-100 text-center space-y-4">
-                   <div className="relative">
-                      <Network size={64} className="accent-text animate-pulse opacity-20" />
-                      <Loader2 size={32} className="accent-text animate-spin absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                   </div>
-                   <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Querying Neural Mesh Source Nodes...</p>
-                </div>
+                <div className="h-80 flex flex-col items-center justify-center bg-zinc-50 rounded-[3rem] border border-zinc-100 text-center"><Loader2 size={32} className="accent-text animate-spin" /><p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-4">Querying Universal Nodes...</p></div>
               ) : results ? (
                 <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
                    <div className="bg-zinc-950 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
@@ -101,10 +77,7 @@ const GlobalPulse: React.FC = () => {
                    </div>
                 </div>
               ) : (
-                <div className="h-80 border-2 border-dashed border-zinc-100 rounded-[3rem] flex flex-col items-center justify-center text-zinc-300 space-y-4 bg-zinc-50/50">
-                   <Target size={48} className="opacity-20" />
-                   <p className="text-[10px] font-black uppercase tracking-widest">Enter Subject Metadata to Initiate Pulse Grounding</p>
-                </div>
+                <div className="h-80 border-2 border-dashed border-zinc-100 rounded-[3rem] flex flex-col items-center justify-center text-zinc-300 space-y-4 bg-zinc-50/50"><Target size={48} /><p className="text-[10px] font-black uppercase tracking-widest">Enter Subject Metadata to Initiate Pulse Grounding</p></div>
               )}
            </div>
 

@@ -7,7 +7,7 @@ import {
   Route, Brackets, Workflow, Network, Check, XCircle, AlertCircle,
   Lightbulb
 } from 'lucide-react';
-import { executeBusinessDirective } from '../src/services/geminiService';
+import { executeBusinessDirective } from '../services/gemini';
 
 // Data structure for the ERP State
 interface ERPAsset {

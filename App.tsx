@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { VeritrustTheme, VaultRecord } from './types';
 
 // --- INSTITUTIONAL COMPONENT MESH ---
 import Sidebar from './components/Sidebar';
@@ -11,7 +12,7 @@ import ForensicLab from './components/ForensicLab';
 import GlobalPulse from './components/GlobalPulse';
 import ProtocolUpdates from './components/ProtocolUpdates';
 import ProofPortal from './components/ProofPortal';
-import StrategyHub from './components/StrategyHub';
+import IntelligenceHub from './components/IntelligenceHub'; // Strategy Hub
 import BusinessValue from './components/BusinessValue';
 import BGVVault from './components/BGVVault';
 import ProxyGuard from './components/ProxyGuard';
@@ -19,34 +20,19 @@ import ResourceLedger from './components/ResourceLedger';
 import ERPArchitect from './components/ERPArchitect';
 import AuditHistory from './components/AuditHistory';
 import LicensingHub from './components/LicensingHub';
-import VisionRoadmap from './components/VisionRoadmap';
+import PitchDeck from './components/PitchDeck'; // Vision Roadmap
 import LegalHub from './components/LegalHub';
 import InvoicePortal from './components/InvoicePortal';
 import CandidatePortal from './components/CandidatePortal';
 import ContactUs from './components/ContactUs';
 import Home from './components/Home';
-import StrategicBlueprint from './components/StrategicBlueprint';
+import MarketPosition from './components/MarketPosition'; // Strategic Blueprint
+import VettingSimulator from './components/VettingSimulator'; // NEW
 
 import { 
   Settings2, Search, Bell, Fingerprint, Menu, Activity, Cpu, Clock, 
-  ShieldAlert, CheckCircle2, FileText, ExternalLink, MessageSquare, Info, X
+  ShieldAlert, CheckCircle2, FileText, ExternalLink, MessageSquare, Info
 } from 'lucide-react';
-
-// --- TYPES & GLOBAL INTERFACES ---
-export type VeritrustTheme = 'emerald' | 'indigo' | 'onyx';
-
-export interface VaultRecord {
-  id: string;
-  name: string;
-  role: string;
-  status: 'Verified' | 'Flagged' | 'Failed';
-  trustScore: number;
-  created_at: string;       // Synced with Render Backend
-  photoUrl: string | null;  // Synced with Render Backend
-  report?: string;          // Forensic analysis text
-  entity_verified?: boolean; // Trinity of Trust: Company
-  identity_verified?: boolean; // Trinity of Trust: Candidate
-}
 
 const App: React.FC = () => {
   // --- Global State Management ---
@@ -88,6 +74,7 @@ const App: React.FC = () => {
         status: r.status === 'GROUNDED' || r.status === 'Verified' ? 'Verified' : r.status === 'TERMINATED' ? 'Failed' : 'Flagged',
         trustScore: r.trustScore,
         created_at: r.created_at,
+        // Ensure photoUrl is either a valid string or null, never undefined if mapped, but typescript allows undefined
         photoUrl: r.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${r.name}`,
         entity_verified: r.entity_verified,
         identity_verified: r.identity_verified,
@@ -116,7 +103,7 @@ const App: React.FC = () => {
     }, ...prev].slice(0, 5));
   }, []);
 
-  const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string) => {
+  const handleAuditCompletion = useCallback((name: string, role: string, score: number, verdict: string, report: string) => {
     addSystemEvent('New Audit Anchored', `Identity grounding for ${name} verified in Vault.`, score > 50 ? 'success' : 'critical');
     fetchGlobalVault(); 
   }, [addSystemEvent, fetchGlobalVault]);
@@ -147,11 +134,25 @@ const App: React.FC = () => {
   // --- Neural Router: Handling all 23 views ---
   const renderContent = () => {
     switch (activeView) {
-      case 'home': return <Home onEnter={() => setActiveView('dashboard')} onContact={() => setActiveView('contact-us')} />;
+      // Core & Founder
+      case 'home': return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} />;
       case 'ceo-command': return <FounderAnalytics />;
-      case 'dashboard': return <Dashboard isHibernation={isHibernation} records={records} />;
-      case 'erp-architect': return <ERPArchitect onLogicDeploy={(d) => addSystemEvent('Logic Mutation', d, 'info')} />;
       
+      // The "Neural Mesh" Core Components (CTO Branding)
+      case 'truth-engine': return <IntegrityScanner onAuditComplete={handleAuditCompletion} />; // Was IntegrityScanner
+      case 'universal-trust': return <GlobalPulse />; // Was GlobalPulse
+      
+      // Labs & Simulation
+      case 'vetting-simulator': return <VettingSimulator />; // NEW Component for Demo
+      case 'forensic-lab': return <ForensicLab onVerdict={handleAuditCompletion} />;
+      case 'proxy-guard': return <ProxyGuard onFraudDetected={(n, r, s, v) => handleAuditCompletion(n, r, s, v, "Proxy Fraud Attempt")} />;
+      
+      // Strategy & Vision
+      case 'strategic-blueprint': return <MarketPosition />; // Mapped to MarketPosition
+      case 'strategy-hub': return <IntelligenceHub />; // Mapped to IntelligenceHub
+      case 'vision-roadmap': return <PitchDeck />; // Mapped to PitchDeck
+      
+      // Ops & System
       case 'bgv-vault': 
         return (
           <BGVVault 
@@ -176,47 +177,16 @@ const App: React.FC = () => {
           />
         );
 
-      case 'integrity-scan': return <IntegrityScanner onAuditComplete={handleAuditCompletion} />;
-      case 'proxy-guard': return <ProxyGuard onFraudDetected={handleAuditCompletion} />;
-      case 'forensic-lab': return <ForensicLab onVerdict={handleAuditCompletion} />;
-      
       case 'resource-ledger': return <ResourceLedger />;
-      case 'strategic-blueprint': return <StrategicBlueprint onAction={(v: any) => setActiveView(v)} />;
-      case 'global-pulse': return <GlobalPulse />;
+      case 'erp-architect': return <ERPArchitect onLogicDeploy={(d) => addSystemEvent('Logic Mutation', d, 'info')} />;
       case 'business-value': return <BusinessValue />;
       case 'updates': return <ProtocolUpdates />;
-      case 'client-acquisition': return <StrategyHub />;
       case 'candidate-portal': return <CandidatePortal />;
       case 'licensing': return <LicensingHub />;
       case 'invoice-portal': return <InvoicePortal />;
-      case 'vision-roadmap': return <VisionRoadmap onAction={(v) => setActiveView(v)} />;
       case 'legal-hub': return <LegalHub />;
       case 'contact-us': return <ContactUs />;
       
-      case 'newsletter':
-        return (
-          <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in duration-700">
-            <div className="bg-zinc-900 rounded-[4rem] p-12 lg:p-20 text-white text-center border-b-8 border-indigo-600 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-10 opacity-10"><FileText size={160} /></div>
-              <div className="relative z-10 space-y-6">
-                 <h2 className="text-4xl lg:text-6xl font-black font-quantum uppercase tracking-tighter">The Integrity <span className="text-indigo-400">Mesh</span></h2>
-                 <p className="text-lg lg:text-xl text-zinc-400 font-medium max-w-xl mx-auto leading-relaxed italic">"Forensic Intelligence on Global Identity Fraud & Neural Scrutiny."</p>
-                 <div className="pt-8">
-                    <button 
-                      onClick={() => window.open('https://www.linkedin.com/newsletters/7212450534571933696/', '_blank')}
-                      className="px-10 py-5 bg-white text-zinc-900 font-black rounded-2xl flex items-center gap-3 mx-auto hover:bg-indigo-50 hover:text-white transition-all shadow-xl"
-                    >
-                       Subscribe on LinkedIn <ExternalLink size={20} />
-                    </button>
-                 </div>
-              </div>
-            </div>
-            <div className="p-10 bg-white border-4 border-zinc-100 rounded-[3rem] text-center">
-               <p className="text-zinc-500 font-bold uppercase text-[10px] tracking-[0.3em]">Institutional Knowledge Base • Issue #001 Deployed</p>
-            </div>
-          </div>
-        );
-
       case 'shared': return <ProofPortal record={selectedRecord || records[0]} onClose={() => { setActiveView('bgv-vault'); window.location.hash = ''; }} />;
       
       case 'settings': return (
@@ -257,7 +227,7 @@ const App: React.FC = () => {
           </div>
         </div>
       );
-      default: return <Home onEnter={() => setActiveView('dashboard')} onContact={() => setActiveView('contact-us')} />;
+      default: return <Home onEnter={() => setActiveView('truth-engine')} onContact={() => setActiveView('contact-us')} />;
     }
   };
 

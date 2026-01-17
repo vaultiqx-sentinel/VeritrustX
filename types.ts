@@ -1,34 +1,57 @@
-export type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'select' | 'email' | 'currency';
+export type VeritrustTheme = 'indigo' | 'emerald' | 'onyx';
 
-export interface ModuleField {
+export type VerdictType = 'Verified' | 'Likely True' | 'Unverified' | 'Misleading' | 'False' | 'Flagged' | 'Failed';
+
+export interface Source {
+  title: string;
+  uri: string;
+}
+
+export interface VaultRecord {
   id: string;
   name: string;
-  label: string;
-  type: FieldType;
-  options?: string[]; // For select type
-  required: boolean;
+  role: string;
+  status: 'Verified' | 'Flagged' | 'Failed';
+  trustScore: number;
+  report?: string;
+  created_at: string;
+  photoUrl?: string | null;
+  entity_verified?: boolean;
+  identity_verified?: boolean;
+}
+
+export enum AnalysisMode {
+  TEXT = 'TEXT',
+  IMAGE = 'IMAGE',
+  DEEP_SCAN = 'DEEP_SCAN'
+}
+
+export interface VerificationResult {
+  score: number;
+  verdict: VerdictType;
+  summary: string;
+  analysisPoints: string[];
+  sources: Source[];
 }
 
 export interface ModuleSchema {
   id: string;
   name: string;
   description: string;
-  icon: string;
-  fields: ModuleField[];
-  createdAt: number;
+  fields: {
+    id: string;
+    name: string;
+    label: string;
+    type: 'text' | 'number' | 'date' | 'select' | 'email' | 'currency' | 'boolean';
+    required?: boolean;
+    options?: string[];
+  }[];
 }
 
 export interface ModuleEntry {
   id: string;
   moduleId: string;
   data: Record<string, any>;
-  createdAt: number;
-  updatedAt: number;
-}
-
-export interface DashboardStat {
-  label: string;
-  value: string | number;
-  change: string;
-  trend: 'up' | 'down' | 'neutral';
+  verified: boolean;
+  timestamp: string;
 }

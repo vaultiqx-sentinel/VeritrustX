@@ -1,25 +1,18 @@
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, Search, ShieldCheck, UserCheck, Fingerprint, 
-  FileSearch, Code2, History, Key, Map, Scale, Bell, Radio, 
-  ReceiptText, UserPlus, Scan, Shield, Sparkles, Moon, Globe, 
-  MessageSquare, Activity, TrendingUp, ChevronRight,
-  Rocket, Crown, FileText, X
+  ShieldCheck, Search, Fingerprint, ReceiptText, Key, Bell, 
+  MessageSquare, Activity, Globe, Rocket, Crown, Cpu, Network, Scan, 
+  UserCheck, Map, Target, X
 } from 'lucide-react';
-import { VeritrustTheme } from '../App';
+import { VeritrustTheme } from '../types';
 
-/**
- * SidebarProps Interface
- * @param isOpen - Mobile state to control drawer visibility
- * @param onClose - Function to close the drawer on mobile after selection
- */
 interface SidebarProps {
   activeView: string;
   setActiveView: (id: string) => void;
   currentTheme: VeritrustTheme;
   onThemeChange: (theme: VeritrustTheme) => void;
-  isOpen?: boolean;    // 📱 Added for Mobile Logic
-  onClose?: () => void; // 📱 Added for Mobile Logic
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ 
@@ -32,53 +25,45 @@ const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 🛡️ THE COMPLETE VERITRUSTX NAVIGATION MESH
+  // 🛡️ CTO-READY NAVIGATION MESH
   const navItems = [
-    // --- FOUNDER AUTHORITY ---
+    // --- FOUNDER LEVEL ---
     { id: 'ceo-command', label: 'CEO Command', icon: Crown, badge: 'FOUNDER', category: 'Founder' },
 
-    // --- CORE LOGIC ---
-    { id: 'home', label: 'Institutional Home', icon: Globe, category: 'Core' },
-    { id: 'erp-architect', label: 'ERP Architect', icon: Code2, badge: 'NEW', category: 'Core' },
+    // --- CORE MESH ---
+    { id: 'home', label: 'Neural Mesh Home', icon: Globe, category: 'Core' },
+    { id: 'truth-engine', label: 'Truth Engine', icon: Cpu, badge: 'CORE', category: 'Core' },
+    { id: 'universal-trust', label: 'Universal Trust', icon: Network, category: 'Core' },
     
-    // --- SCANNERS & ENGINES ---
-    { id: 'dashboard', label: 'Threat Overview', icon: LayoutDashboard, category: 'Scanning' },
-    { id: 'integrity-scan', label: 'BGV Logic Scrutiny', icon: FileSearch, badge: 'CORE', category: 'Scanning' },
-    { id: 'forensic-lab', label: 'Forensic Lab', icon: Scan, badge: 'DNA', category: 'Scanning' },
-    { id: 'proxy-guard', label: 'Proxy Guard', icon: UserCheck, badge: 'LIVE', category: 'Scanning' },
-    { id: 'bgv-vault', label: 'BGV Vault', icon: ShieldCheck, category: 'Scanning' },
-    { id: 'audit-history', label: 'Audit History', icon: History, category: 'Scanning' },
+    // --- SIMULATION & LABS ---
+    { id: 'vetting-simulator', label: 'Vetting Simulator', icon: Activity, badge: 'DEMO', category: 'Labs' },
+    { id: 'forensic-lab', label: 'Forensic Lab', icon: Scan, badge: 'DNA', category: 'Labs' },
+    { id: 'proxy-guard', label: 'Proxy Guard', icon: UserCheck, badge: 'LIVE', category: 'Labs' },
     
-    // --- BUSINESS & GROWTH ---
-    { id: 'client-acquisition', label: 'Lead Radar', icon: Radio, badge: 'GROWTH', category: 'Business' },
-    { id: 'business-value', label: 'Organization ROI', icon: TrendingUp, category: 'Business' },
-    { id: 'candidate-portal', label: 'Candidate Mesh', icon: UserPlus, badge: 'INTAKE', category: 'Business' },
-    { id: 'licensing', label: 'Licensing Hub', icon: Key, category: 'Business' },
-    { id: 'invoice-portal', label: 'Invoice Portal', icon: ReceiptText, badge: 'FINANCE', category: 'Business' },
-    { id: 'vision-roadmap', label: 'Release Roadmap', icon: Map, category: 'Business' },
+    // --- STRATEGY & VISION ---
+    { id: 'strategic-blueprint', label: 'Strategic Blueprint', icon: Map, category: 'Strategy' },
+    { id: 'strategy-hub', label: 'Strategy Hub', icon: Target, badge: 'INTEL', category: 'Strategy' },
+    { id: 'vision-roadmap', label: 'Vision Roadmap', icon: Rocket, category: 'Strategy' },
     
-    // --- SYSTEM INFRASTRUCTURE ---
-    { id: 'legal-hub', label: 'Legal & Privacy', icon: Scale, category: 'System' },
-    { id: 'updates', label: 'Update Feed', icon: Bell, badge: 'NEW', category: 'System' },
-    { id: 'contact-us', label: 'Forensic Support', icon: MessageSquare, badge: '24/7', category: 'System' },
-    { id: 'strategic-blueprint', label: 'Future Blueprint', icon: Rocket, badge: 'VISION', category: 'System' },
-    { id: 'newsletter', label: 'Integrity Mesh', icon: FileText, badge: 'INTEL', category: 'System' },
+    // --- BUSINESS OPERATIONS ---
+    { id: 'bgv-vault', label: 'BGV Vault', icon: ShieldCheck, category: 'Ops' },
+    { id: 'licensing', label: 'Licensing Hub', icon: Key, category: 'Ops' },
+    { id: 'invoice-portal', label: 'Invoice Portal', icon: ReceiptText, category: 'Ops' },
+    
+    // --- SYSTEM ---
+    { id: 'updates', label: 'Protocol Updates', icon: Bell, badge: 'NEW', category: 'System' },
+    { id: 'contact-us', label: 'Forensic Uplink', icon: MessageSquare, category: 'System' },
   ];
 
-  // Filter logic for the search bar
   const filteredItems = navItems.filter(item => 
     item.label.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  /**
-   * NavButton Component
-   * Internal helper for consistent button styling
-   */
   const NavButton = ({ id, label, icon: Icon, badge }: any) => (
     <button
       onClick={() => {
         setActiveView(id);
-        if (onClose) onClose(); // 📱 Close drawer on mobile selection
+        if (onClose) onClose();
       }}
       className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 ${
         activeView === id 
@@ -98,7 +83,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           badge === 'INTEL' ? 'bg-indigo-500 text-white' :
           badge === 'LIVE' ? 'bg-rose-600 text-white' : 
           badge === 'DNA' ? 'bg-orange-600 text-white' :
-          badge === 'GROWTH' ? 'bg-amber-500 text-white' :
+          badge === 'DEMO' ? 'bg-emerald-500 text-white' :
+          badge === 'CORE' ? 'bg-blue-600 text-white' :
           'bg-emerald-100 text-emerald-700 border border-emerald-200'
         }`}>{badge}</span>
       )}
@@ -107,8 +93,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <aside className={`w-64 h-full border-r flex flex-col transition-all duration-500 shadow-2xl lg:shadow-none overflow-y-auto custom-scrollbar ${currentTheme === 'onyx' ? 'bg-zinc-950 border-white/5' : 'bg-white border-emerald-50'}`}>
-      
-      {/* 🛡️ BRAND SECTION - ACTIVE LOGO BUTTON */}
       <div className={`relative flex items-center justify-between border-b ${currentTheme === 'onyx' ? 'border-white/5' : 'border-emerald-50'}`}>
         <button 
           onClick={() => {
@@ -118,30 +102,22 @@ const Sidebar: React.FC<SidebarProps> = ({
           className={`flex-1 p-8 flex items-center gap-3 text-left transition-all group`}
         >
           <div className="w-10 h-10 accent-bg rounded-xl flex items-center justify-center shadow-lg text-white shrink-0 group-hover:scale-110 transition-transform">
-            <Fingerprint size={22} />
+            <ShieldCheck size={22} />
           </div>
           <div>
              <h1 className={`text-lg font-black tracking-tighter leading-none font-quantum ${currentTheme === 'onyx' ? 'text-white' : 'text-zinc-900'}`}>VeritrustX</h1>
-             <p className="text-[10px] font-black accent-text uppercase tracking-widest mt-1 italic">Identity Firewall</p>
+             <p className="text-[10px] font-black accent-text uppercase tracking-widest mt-1 italic">Neural Mesh</p>
           </div>
         </button>
-
-        {/* 📱 MOBILE CLOSE BUTTON */}
-        <button 
-          onClick={onClose}
-          className="lg:hidden p-4 mr-2 text-zinc-400 hover:text-zinc-900 transition-colors"
-        >
-          <X size={20} />
-        </button>
+        <button onClick={onClose} className="lg:hidden p-4 mr-2 text-zinc-400 hover:text-zinc-900 transition-colors"><X size={20} /></button>
       </div>
 
-      {/* 🔍 SEARCH TOOL */}
       <div className={`px-4 py-4 border-b ${currentTheme === 'onyx' ? 'border-white/5' : 'border-emerald-50'}`}>
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:accent-text transition-colors" size={14} />
           <input 
             type="text" 
-            placeholder="Search Protocol..."
+            placeholder="Query Protocol..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={`w-full pl-9 pr-3 py-2 border rounded-lg text-xs outline-none transition-all font-medium ${currentTheme === 'onyx' ? 'bg-white/5 border-white/5 text-white' : 'bg-zinc-50 border-zinc-100 text-zinc-600 focus:bg-white'}`}
@@ -149,9 +125,8 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
 
-      {/* 🧭 NAVIGATION MESH (CATEGORIZED) */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-8 custom-scrollbar">
-        {['Founder', 'Core', 'Scanning', 'Business', 'System'].map(category => {
+        {['Founder', 'Core', 'Labs', 'Strategy', 'Ops', 'System'].map(category => {
           const categoryItems = filteredItems.filter(item => item.category === category);
           if (categoryItems.length === 0) return null;
           return (
@@ -169,46 +144,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           );
         })}
       </nav>
-
-      {/* 🌈 NEURAL SPECTRUM & COPYRIGHT */}
-      <div className={`p-4 border-t ${currentTheme === 'onyx' ? 'border-white/5 bg-black/30' : 'border-emerald-50 bg-zinc-50/50'}`}>
-        <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-3 text-center">Neural Spectrum</p>
-        <div className={`flex p-1 rounded-xl gap-1 mb-4 ${currentTheme === 'onyx' ? 'bg-zinc-900' : 'bg-white border border-zinc-200'}`}>
-           <button 
-              onClick={() => onThemeChange('emerald')}
-              className={`flex-1 py-2 rounded-lg flex items-center justify-center transition-all ${currentTheme === 'emerald' ? 'bg-emerald-600 text-white shadow-md' : 'text-zinc-400 hover:text-emerald-600'}`}
-              title="Institutional Emerald"
-           >
-              <Shield size={14} />
-           </button>
-           <button 
-              onClick={() => onThemeChange('indigo')}
-              className={`flex-1 py-2 rounded-lg flex items-center justify-center transition-all ${currentTheme === 'indigo' ? 'bg-indigo-600 text-white shadow-md' : 'text-zinc-400 hover:text-indigo-600'}`}
-              title="Strategic Indigo"
-           >
-              <Sparkles size={14} />
-           </button>
-           <button 
-              onClick={() => onThemeChange('onyx')}
-              className={`flex-1 py-2 rounded-lg flex items-center justify-center transition-all ${currentTheme === 'onyx' ? 'bg-zinc-700 text-white shadow-md' : 'text-zinc-400 hover:text-zinc-200'}`}
-              title="Deep Scrutiny Onyx"
-           >
-              <Moon size={14} />
-           </button>
-        </div>
-
-        <div className="mt-6 px-2 space-y-2">
-           <div className="flex items-center gap-2">
-              <ShieldCheck size={12} className="text-emerald-500" />
-              <span className="text-[8px] font-black text-zinc-900 uppercase tracking-widest">Protocol Secured</span>
-           </div>
-           <p className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest leading-relaxed">
-              © 2026 VeriTrustX Protocol. <br /> 
-              Global Integrity Standard. <br /> 
-              All Rights Reserved.
-           </p>
-        </div>
-      </div>
     </aside>
   );
 };

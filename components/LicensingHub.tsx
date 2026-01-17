@@ -6,7 +6,7 @@ import {
   ChevronRight, CheckCircle2, DollarSign, Target, Award, 
   ArrowUpRight, FileText, Check, ReceiptText, Plus, EyeOff, Eye, Trash2, Lock
 } from 'lucide-react';
-import { generateUpdateMessage } from '../src/services/geminiService';
+import { generateUpdateMessage } from '../services/gemini';
 
 const EMAIL_TEMPLATES = {
   retention: {
