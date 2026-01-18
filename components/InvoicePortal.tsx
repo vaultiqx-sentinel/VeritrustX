@@ -157,7 +157,7 @@ const InvoicePortal: React.FC<{ theme?: VeritrustTheme }> = ({ theme = 'emerald'
             <div className="space-y-4">
               <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Founder's Note</h4>
               <p className="text-xs text-zinc-600 leading-relaxed font-medium italic">"By authorizing this settlement, your organization is deploying a non-repudiable truth mesh for {invoiceData.durationMonths} months."</p>
-              <p className="text-[9px] font-bold text-indigo-600 uppercase mt-4">© 2025 VeriTrustX Protocol.</p>
+              <p className="text-[9px] font-bold text-indigo-600 uppercase mt-4">© 2026 VeriTrustX Protocol.</p>
             </div>
             <div className="text-right">
                <div className="inline-block relative mb-2">

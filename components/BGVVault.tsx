@@ -293,7 +293,7 @@ const BGVVault: React.FC<BGVVaultProps> = ({ searchFilter = '', records = [], on
                             record.status === 'Verified' ? 'border-emerald-500 shadow-emerald-500/10' : 'border-rose-500 shadow-rose-500/10'
                           }`}>
                             <img 
-                              src={record.photoUrl ?? `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} 
+                              src={record.photoUrl || `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`} 
                               className="w-full h-full object-cover rounded-xl" 
                               alt={record.name} 
                               onError={(e) => { e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${record.name}`; }}

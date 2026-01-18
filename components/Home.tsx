@@ -159,7 +159,7 @@ const Home: React.FC<HomeProps> = ({ onEnter, onContact, onLegal }) => {
       </section>
 
       <div className="text-center pt-10 border-t border-zinc-100 mx-10 pb-10 flex flex-col xl:flex-row items-center justify-between gap-6">
-        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX Protocol • Global Integrity Standard</p>
+        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-[0.4em]">© 2026 VeriTrustX. All rights reserved.</p>
         <div className="flex gap-8">
            <button onClick={onLegal} className="text-[10px] font-black text-zinc-400 hover:text-indigo-600 uppercase tracking-widest transition-colors">Legal Hub</button>
            <button onClick={onContact} className="text-[10px] font-black text-zinc-400 hover:text-indigo-600 uppercase tracking-widest transition-colors">Contact</button>

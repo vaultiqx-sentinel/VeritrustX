@@ -1,5 +1,6 @@
+
 import React, { useMemo } from 'react';
-import { History, Download, Clock, User, ArrowRight, Calendar } from 'lucide-react';
+import { History, CheckCircle2, AlertTriangle, XCircle, Clock, User, ArrowRight, Calendar } from 'lucide-react';
 import { VaultRecord } from '../types';
 
 export interface AuditHistoryProps {
@@ -15,6 +16,21 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
       item.role?.toLowerCase().includes(searchFilter.toLowerCase())
     );
   }, [searchFilter, records]);
+
+  const getStatusConfig = (status: string) => {
+    switch(status) {
+      case 'Verified': return { color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100', icon: CheckCircle2 };
+      case 'Flagged': return { color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-100', icon: AlertTriangle };
+      case 'Failed': return { color: 'text-rose-600', bg: 'bg-rose-50', border: 'border-rose-100', icon: XCircle };
+      default: return { color: 'text-zinc-600', bg: 'bg-zinc-50', border: 'border-zinc-100', icon: History };
+    }
+  };
+
+  const getScoreColor = (score: number) => {
+    if (score > 80) return 'text-emerald-500';
+    if (score > 40) return 'text-amber-500';
+    return 'text-rose-500';
+  };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700 pb-20">
@@ -39,20 +55,27 @@ const AuditHistory: React.FC<AuditHistoryProps> = ({ searchFilter = '', records,
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-50">
-              {filteredHistory.map((item) => (
-                <tr key={item.id} className="hover:bg-zinc-50 transition-colors group cursor-pointer" onClick={() => onViewRecord?.(item)}>
-                  <td className="px-10 py-6 text-xs font-mono font-bold text-indigo-600">{item.id}</td>
-                  <td className="px-10 py-6 text-sm font-black text-zinc-900">{item.name}</td>
-                  <td className="px-10 py-6 text-sm font-bold text-zinc-600">{item.role}</td>
-                  <td className="px-10 py-6 text-xs font-bold text-zinc-400 uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString()}</td>
-                  <td className="px-10 py-6">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${item.status === 'Verified' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>{item.status}</span>
-                  </td>
-                  <td className="px-10 py-6 text-right">
-                    <span className={`text-lg font-black tracking-tighter ${item.trustScore > 80 ? 'text-emerald-500' : 'text-amber-500'}`}>{item.trustScore}%</span>
-                  </td>
-                </tr>
-              ))}
+              {filteredHistory.map((item) => {
+                const statusConfig = getStatusConfig(item.status);
+                const StatusIcon = statusConfig.icon;
+                
+                return (
+                  <tr key={item.id} className="hover:bg-zinc-50 transition-colors group cursor-pointer" onClick={() => onViewRecord?.(item)}>
+                    <td className="px-10 py-6 text-xs font-mono font-bold text-indigo-600">{item.id}</td>
+                    <td className="px-10 py-6 text-sm font-black text-zinc-900">{item.name}</td>
+                    <td className="px-10 py-6 text-sm font-bold text-zinc-600">{item.role}</td>
+                    <td className="px-10 py-6 text-xs font-bold text-zinc-400 uppercase tracking-widest">{new Date(item.created_at).toLocaleDateString()}</td>
+                    <td className="px-10 py-6">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border shadow-sm ${statusConfig.bg} ${statusConfig.color} ${statusConfig.border}`}>
+                        <StatusIcon size={12} /> {item.status}
+                      </span>
+                    </td>
+                    <td className="px-10 py-6 text-right">
+                      <span className={`text-lg font-black tracking-tighter ${getScoreColor(item.trustScore)}`}>{item.trustScore}%</span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
